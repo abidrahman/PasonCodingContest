@@ -67,14 +67,10 @@ final class Client
 		while (true) {
 
 			JSONObject gameState = comm.getJSONGameState(); // Blocking wait for game state example
+			System.out.println(gameState);
 			try {
-				String time = gameState.getString("timestamp");
-				System.out.println(time);
 				if (gameState.getString("comm_type").equals("MatchEnd")) break;
-			} catch(JSONException e) {
-				System.err.println("couldn't print the time");
-			}
-
+			} catch(JSONException e) {}
 		}
 
 		System.out.println("Received game state!");
