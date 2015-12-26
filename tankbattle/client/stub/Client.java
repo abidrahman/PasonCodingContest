@@ -102,11 +102,12 @@ final class Client
 							comm.send(rotate_tracks_command, "comm_type");
 
 							JSONArray projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
-							for (int k = 0; k < projectiles.length(); k++) {
-								String range = projectiles.getJSONObject(k).getString("range");
-								System.out.println(range);
+							if (projectiles.length() > 0) {
+								for (int k = 0; k < projectiles.length(); k++) {
+									String range = projectiles.getJSONObject(k).getString("range");
+									System.out.println(range);
+								}
 							}
-
 						}
 					}
 				}
