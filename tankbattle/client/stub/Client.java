@@ -130,6 +130,7 @@ final class Client
 					tank.update(gameState);
 					tank.movement();
 					tank.attack();
+					tank.printID();
 				}
 
 			}

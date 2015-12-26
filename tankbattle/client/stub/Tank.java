@@ -14,6 +14,10 @@ public class Tank {
         this.tankID = tankID;
     }
 
+    public void printID() {
+        System.out.println(this.tankID);
+    }
+
     public void update(JSONObject gameState) {
         this.gameState = gameState;
     }
