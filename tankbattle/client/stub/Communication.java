@@ -75,7 +75,6 @@ final class Communication
 		String reply = send(message);
 		JSONObject json = null;
 		String value = null;
-		System.out.println(reply);
 
 		try {
 			json = new JSONObject(reply);
