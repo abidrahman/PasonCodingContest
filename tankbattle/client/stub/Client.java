@@ -89,13 +89,13 @@ final class Client
 						for (int j = 0; j < tanks.length(); j++) {
 							String tankID = tanks.getJSONObject(j).getString("id");
 							String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
-							comm.send(moveCommand, Command.Key.RESP);
+							comm.send(moveCommand, "comm_type");
 							String rotate_command = command.rotateTurret(tankID, "CCW", 1, gameInfo.getClientToken());
 							String fire_command = command.fire(tankID, gameInfo.getClientToken());
-							comm.send(rotate_command, Command.Key.RESP);
-							comm.send(fire_command, Command.Key.RESP);
+							comm.send(rotate_command, "comm_type");
+							comm.send(fire_command, "comm_type");
 							String rotate_tracks_command = command.rotate(tankID, "CCW", 1, gameInfo.getClientToken());
-							comm.send(rotate_tracks_command, Command.Key.RESP);
+							comm.send(rotate_tracks_command, "comm_type");
 						}
 					}
 				}
