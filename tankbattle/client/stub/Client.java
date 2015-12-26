@@ -104,7 +104,7 @@ final class Client
 
 							JSONArray projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
 							for (int k = 0; k < projectiles.length(); k++) {
-								String range = projectiles.getJSONObject(k).getString("range");
+								Object range = projectiles.getJSONObject(k).get("range");
 								System.out.println(range);
 							}
 
