@@ -12,7 +12,8 @@ final class Command
 		public static final String MESSAGE = "message";
 		public static final String MSG = "msg";
 		public static final String RESP = "resp";
-		private static final String COMM_TYPE = "comm_type";
+		public static final String COMM_TYPE = "comm_type";
+		public static final String MATCH_END = "MatchEnd";
 		private static final String MATCH_TOKEN = "match_token";
 		private static final String TANK_ID = "tank_id";
 		private static final String DIRECTION = "direction";

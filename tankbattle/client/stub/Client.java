@@ -2,6 +2,8 @@ package tankbattle.client.stub;
 
 import org.json.*;
 import org.zeromq.ZMQ;
+import java.util.ArrayList;
+import java.util.List;
 
 final class Client
 {
@@ -10,16 +12,24 @@ final class Client
 		public static final String CREATE = "create";
 		public static final String JOIN = "join";
 	}
-	
+
+	private static List<Tank> tankList = new ArrayList<Tank>();
+
+	private enum State {
+		MATCH_BEGIN, GAME_BEGIN, GAME_PLAY, GAME_END, MATCH_END
+	}
+
 
 	public static void main(String[] args)
 	{
 		try {
 			Client.run(args);
-		} catch (JSONException e) {
-			System.out.println("JSON error.");
+		} catch (JSONException e ) {
+			System.out.println("JSON error. Terminating...");
 		}
 	}
+
+
 
 	public static void run(String[] args) throws JSONException
 	{
@@ -69,22 +79,25 @@ final class Client
 		System.out.println("Waiting for initial game state...");
 
 
-		JSONObject gameState = comm.getJSONGameState(); // Blocking wait for game state example
+		JSONObject gameState; // Blocking wait for game state example
 
 		long time = System.currentTimeMillis();
+		State state = State.MATCH_BEGIN;
+		while (true)
+		{
+			System.out.println(state);
+			gameState = comm.getJSONGameState();
 
-		while (!gameState.getString("comm_type").equals("MatchEnd")) {
-
-			long new_time = System.currentTimeMillis();
-			if (new_time - time > 3000 && gameState.has("map")) {
-				time = new_time;
-				System.out.println(gameState.toString(4));
-				JSONArray map_size = gameState.getJSONObject("map").getJSONArray("size");
-				System.out.println(map_size.get(0));
-				System.out.println(map_size.get(1));
+			if (gameState.has("comm_type") && gameState.getString("comm_type").equals("MatchEnd")) {
+				break; // if in any state we receive match end, quit
 			}
 
-			if (gameState.has("players")) {
+			if (state == State.MATCH_BEGIN && gameState.has("comm_type") && gameState.getString("comm_type").equals("GAMESTATE")) {
+				state = State.GAME_BEGIN; // if in match begin and we get GAMESTATE, then go to game begin
+			}
+
+			if (state == State.GAME_BEGIN) {
+				// this state loads all of our tanks into new Tank objects (once at the beginning of each game)
 				JSONArray players = gameState.getJSONArray("players");
 				for (int i = 0; i < players.length(); i++) {
 					if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
@@ -93,28 +106,84 @@ final class Client
 
 							String tankID = tanks.getJSONObject(j).getString("id");
 
-							String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
-							comm.send(moveCommand, "comm_type");
-							String rotate_command = command.rotateTurret(tankID, "CCW", 1, gameInfo.getClientToken());
-							String fire_command = command.fire(tankID, gameInfo.getClientToken());
-							comm.send(rotate_command, "comm_type");
-							comm.send(fire_command, "comm_type");
-							String rotate_tracks_command = command.rotate(tankID, "CCW", 1, gameInfo.getClientToken());
-							comm.send(rotate_tracks_command, "comm_type");
-
-							JSONArray projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
-							for (int k = 0; k < projectiles.length(); k++) {
-								Object range = projectiles.getJSONObject(k).get("range");
-								System.out.println(range);
-							}
+							Tank tank = new Tank(tankID);
+							tankList.add(tank);
 
 						}
 					}
 				}
+
+				if (tankList.size() > 0) // if we successfully added the tanks
+					state = State.GAME_PLAY;
 			}
 
-			gameState = comm.getJSONGameState(); // Blocking wait for game state example
+			if (state == State.GAME_PLAY) {
+
+				// if it's the end of the game, go to game end state
+				if (gameState.has("comm_type") && gameState.getString("comm_type").equals("GAME_END")) {
+					state = State.GAME_END;
+					continue;
+				}
+
+				// execute main game logic
+				for (Tank tank : tankList) {
+					tank.update(gameState);
+					tank.movement();
+					tank.attack();
+				}
+
+			}
+
+			if (state == State.GAME_END) {
+				// clear tanks
+				tankList.clear();
+				state = State.GAME_BEGIN;
+			}
+
 		}
+
+//			while (!gameState.getString("comm_type").equals("MatchEnd")) {
+//
+//				long new_time = System.currentTimeMillis();
+//				if (new_time - time > 3000 && gameState.has("map")) {
+//					time = new_time;
+//					System.out.println(gameState.toString(4));
+//					JSONArray map_size = gameState.getJSONObject("map").getJSONArray("size");
+//					System.out.println(map_size.get(0));
+//					System.out.println(map_size.get(1));
+//				}
+//
+//				if (gameState.has("players")) {
+//					JSONArray players = gameState.getJSONArray("players");
+//					for (int i = 0; i < players.length(); i++) {
+//						if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
+//							JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
+//							for (int j = 0; j < tanks.length(); j++) {
+//
+//								String tankID = tanks.getJSONObject(j).getString("id");
+//
+//								String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
+//								comm.send(moveCommand, "comm_type");
+//								String rotate_command = command.rotateTurret(tankID, "CCW", 1, gameInfo.getClientToken());
+//								String fire_command = command.fire(tankID, gameInfo.getClientToken());
+//								comm.send(rotate_command, "comm_type");
+//								comm.send(fire_command, "comm_type");
+//								String rotate_tracks_command = command.rotate(tankID, "CCW", 1, gameInfo.getClientToken());
+//								comm.send(rotate_tracks_command, "comm_type");
+//
+//								JSONArray projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
+//								for (int k = 0; k < projectiles.length(); k++) {
+//									Object range = projectiles.getJSONObject(k).get("range");
+//									System.out.println(range);
+//								}
+//
+//							}
+//						}
+//					}
+//				}
+//
+//				gameState = comm.getJSONGameState(); // Blocking wait for game state example
+//			}
 
 		System.out.println("Received game state!");
 		
