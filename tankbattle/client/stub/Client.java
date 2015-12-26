@@ -14,10 +14,14 @@ final class Client
 
 	public static void main(String[] args)
 	{
-		Client.run(args);
+		try {
+			Client.run(args);
+		} catch (JSONException e) {
+			System.out.println("JSON error.");
+		}
 	}
 
-	public static void run(String[] args)
+	public static void run(String[] args) throws JSONException
 	{
 		String ipAddress = null;
 		String teamName = null;
@@ -64,22 +68,24 @@ final class Client
 		
 		System.out.println("Waiting for initial game state...");
 
-		while (true) {
-			JSONObject gameState = comm.getJSONGameState(); // Blocking wait for game state example
-			if (gameState.has("timestamp")) {
-				try {
-					System.out.println(gameState.get("timestamp"));
-				} catch(JSONException e) {
-					System.out.println("Couldn't print the time!");
+
+		JSONObject gameState = comm.getJSONGameState(); // Blocking wait for game state example
+
+		while (!gameState.getString("comm_type").equals("MatchEnd")) {
+			if (gameState.has("players")) {
+				JSONArray players = gameState.getJSONArray("players");
+				for (int i = 0; i < players.length(); i++) {
+					if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
+						JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
+						for (int j = 0; j < tanks.length(); j++) {
+							String tankID = tanks.getJSONObject(j).getString("id");
+							command.move(tankID, "FWD", 10, gameInfo.getClientToken());
+						}
+					}
 				}
 			}
-			if (gameState.has("comm_type")) {
-				try {
-					if (gameState.getString("comm_type").equals("MatchEnd")) break;
-				} catch(JSONException e) {
-					System.out.println("Match ended!");
-				}
-			}
+
+			gameState = comm.getJSONGameState(); // Blocking wait for game state example
 		}
 
 		System.out.println("Received game state!");
