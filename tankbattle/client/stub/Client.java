@@ -79,6 +79,8 @@ final class Client
 						JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
 						for (int j = 0; j < tanks.length(); j++) {
 							String tankID = tanks.getJSONObject(j).getString("id");
+							String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
+							comm.send(moveCommand, Command.Key.RESP);
 							String rotate_command = command.rotateTurret(tankID, "CCW", 1, gameInfo.getClientToken());
 							String fire_command = command.fire(tankID, gameInfo.getClientToken());
 							comm.send(rotate_command, Command.Key.RESP);
