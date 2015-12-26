@@ -79,7 +79,9 @@ final class Client
 						JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
 						for (int j = 0; j < tanks.length(); j++) {
 							String tankID = tanks.getJSONObject(j).getString("id");
-							command.move(tankID, "FWD", 10, gameInfo.getClientToken());
+							String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
+							String moveResponse = comm.send(moveCommand, Command.Key.RESP);
+							System.out.println(moveResponse);
 						}
 					}
 				}
