@@ -68,7 +68,7 @@ final class Client
 			JSONObject gameState = comm.getJSONGameState(); // Blocking wait for game state example
 			if (gameState.has("timestamp")) {
 				try {
-					System.out.println(gameState.getInt("timestamp"));
+					System.out.println(gameState.get("timestamp"));
 				} catch(JSONException e) {
 					System.out.println("Couldn't print the time!");
 				}
