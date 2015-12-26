@@ -85,6 +85,8 @@ final class Client
 							String fire_command = command.fire(tankID, gameInfo.getClientToken());
 							comm.send(rotate_command, Command.Key.RESP);
 							comm.send(fire_command, Command.Key.RESP);
+							String rotate_tracks_command = command.rotate(tankID, "CCW", 1, gameInfo.getClientToken());
+							comm.send(rotate_tracks_command, Command.Key.RESP);
 						}
 					}
 				}
