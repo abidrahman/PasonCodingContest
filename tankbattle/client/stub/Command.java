@@ -51,7 +51,7 @@ final class Command
 	}
 	
 	// Movement
-	public string move(String tankID, String direction, int distance, String clientToken)
+	public String move(String tankID, String direction, int distance, String clientToken)
 	{
 		JSONObject json = new JSONObject();
 		
@@ -70,7 +70,7 @@ final class Command
 	}
 	
 	// Tank Rotation
-	public string rotate(String tankID, String direction, int rads, String clientToken)
+	public String rotate(String tankID, String direction, int rads, String clientToken)
 	{
 		JSONObject json = new JSONObject();
 		
@@ -89,7 +89,7 @@ final class Command
 	}
 	
 	// Turret Rotation
-	public string rotateTurret(String tankID, String direction, int rads, String clientToken)
+	public String rotateTurret(String tankID, String direction, int rads, String clientToken)
 	{
 		JSONObject json = new JSONObject();
 		
@@ -108,7 +108,7 @@ final class Command
 	}
 	
 	// Fire
-	public string fire(String tankID, String clientToken)
+	public String fire(String tankID, String clientToken)
 	{
 		JSONObject json = new JSONObject();
 		
@@ -125,14 +125,14 @@ final class Command
 	}
 	
 	// Stop
-	public string stop(String tankID, String control, String clientToken)
+	public String stop(String tankID, String control, String clientToken)
 	{
 		JSONObject json = new JSONObject();
 		
 		try {
 			json.put(Key.TANK_ID, tankID);
 			json.put(Key.COMM_TYPE, Key.CommType.STOP);
-			json.put(Key.CONTROL, control)
+			json.put(Key.CONTROL, control);
 			json.put(Key.CLIENT_TOKEN, clientToken);
 		} catch(JSONException e) {
 			System.err.println("[Command connectCommand] couldn't create command");
