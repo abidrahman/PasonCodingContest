@@ -76,7 +76,7 @@ final class Client
 		while (!gameState.getString("comm_type").equals("MatchEnd")) {
 
 			long new_time = System.currentTimeMillis();
-			if (new_time - time > 3000) {
+			if (new_time - time > 3000 && gameState.has("map")) {
 				time = new_time;
 				System.out.println(gameState.toString(4));
 				JSONArray map_size = gameState.getJSONObject("map").getJSONArray("size");
@@ -102,7 +102,7 @@ final class Client
 							String rotate_tracks_command = command.rotate(tankID, "CCW", 1, gameInfo.getClientToken());
 							comm.send(rotate_tracks_command, "comm_type");
 
-							JSONArray projectiles = tanks.getJSONObject(0).getJSONArray("projectiles");
+							JSONArray projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
 							for (int k = 0; k < projectiles.length(); k++) {
 								Object range = projectiles.getJSONObject(k).get("range");
 								System.out.println(range);
