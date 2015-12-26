@@ -65,12 +65,21 @@ final class Client
 		System.out.println("Waiting for initial game state...");
 
 		while (true) {
-
 			JSONObject gameState = comm.getJSONGameState(); // Blocking wait for game state example
-			System.out.println(gameState);
-			try {
-				if (gameState.getString("comm_type").equals("MatchEnd")) break;
-			} catch(JSONException e) {}
+			if (gameState.has("timestamp")) {
+				try {
+					System.out.println(gameState.getInt("timestamp"));
+				} catch(JSONException e) {
+					System.out.println("Couldn't print the time!");
+				}
+			}
+			if (gameState.has("comm_type")) {
+				try {
+					if (gameState.getString("comm_type").equals("MatchEnd")) break;
+				} catch(JSONException e) {
+					System.out.println("Match ended!");
+				}
+			}
 		}
 
 		System.out.println("Received game state!");
