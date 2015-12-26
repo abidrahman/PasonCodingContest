@@ -62,7 +62,7 @@ final class Command
 			json.put(Key.DISTANCE, distance);
 			json.put(Key.CLIENT_TOKEN, clientToken);
 		} catch(JSONException e) {
-			System.err.println("[Command connectCommand] couldn't create command");
+			System.err.println("[Command move] couldn't create command");
 			return null;
 		}
 		
@@ -81,7 +81,7 @@ final class Command
 			json.put(Key.RADS, rads);
 			json.put(Key.CLIENT_TOKEN, clientToken);
 		} catch(JSONException e) {
-			System.err.println("[Command connectCommand] couldn't create command");
+			System.err.println("[Command rotate] couldn't create command");
 			return null;
 		}
 		
@@ -100,7 +100,7 @@ final class Command
 			json.put(Key.RADS, rads);
 			json.put(Key.CLIENT_TOKEN, clientToken);
 		} catch(JSONException e) {
-			System.err.println("[Command connectCommand] couldn't create command");
+			System.err.println("[Command rotateTurret] couldn't create command");
 			return null;
 		}
 		
@@ -117,7 +117,7 @@ final class Command
 			json.put(Key.COMM_TYPE, Key.CommType.FIRE);
 			json.put(Key.CLIENT_TOKEN, clientToken);
 		} catch(JSONException e) {
-			System.err.println("[Command connectCommand] couldn't create command");
+			System.err.println("[Command fire] couldn't create command");
 			return null;
 		}
 		
@@ -135,7 +135,7 @@ final class Command
 			json.put(Key.CONTROL, control);
 			json.put(Key.CLIENT_TOKEN, clientToken);
 		} catch(JSONException e) {
-			System.err.println("[Command connectCommand] couldn't create command");
+			System.err.println("[Command stop] couldn't create command");
 			return null;
 		}
 		

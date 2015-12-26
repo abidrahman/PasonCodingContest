@@ -1,7 +1,6 @@
 package tankbattle.client.stub;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.*;
 import org.zeromq.ZMQ;
 
 final class Client
@@ -64,9 +63,20 @@ final class Client
 		System.out.println("Connected!");
 		
 		System.out.println("Waiting for initial game state...");
-		
-		JSONObject gameState = comm.getJSONGameState(); // Blocking wait for game state example
-		
+
+		while (true) {
+
+			JSONObject gameState = comm.getJSONGameState(); // Blocking wait for game state example
+			try {
+				String time = gameState.getString("timestamp");
+				System.out.println(time);
+				if (gameState.getString("comm_type").equals("MatchEnd")) break;
+			} catch(JSONException e) {
+				System.err.println("couldn't print the time");
+			}
+
+		}
+
 		System.out.println("Received game state!");
 		
 		// Add your algorithm here
