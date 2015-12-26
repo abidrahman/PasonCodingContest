@@ -79,8 +79,9 @@ final class Client
 			if (new_time - time > 3000) {
 				time = new_time;
 				System.out.println(gameState.toString(4));
-				String map_size = gameState.getJSONObject("map").getString("size");
-				System.out.println(map_size);
+				JSONArray map_size = gameState.getJSONObject("map").getJSONArray("size");
+				System.out.println(map_size.get(0));
+				System.out.println(map_size.get(1));
 			}
 
 			if (gameState.has("players")) {
@@ -102,12 +103,11 @@ final class Client
 							comm.send(rotate_tracks_command, "comm_type");
 
 							JSONArray projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
-							if (projectiles.length() > 0) {
-								for (int k = 0; k < projectiles.length(); k++) {
-									String range = projectiles.getJSONObject(k).getString("range");
-									System.out.println(range);
-								}
+							for (int k = 0; k < projectiles.length(); k++) {
+								String range = projectiles.getJSONObject(k).getString("range");
+								System.out.println(range);
 							}
+
 						}
 					}
 				}
