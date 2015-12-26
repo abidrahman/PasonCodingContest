@@ -71,7 +71,16 @@ final class Client
 
 		JSONObject gameState = comm.getJSONGameState(); // Blocking wait for game state example
 
+		long time = System.currentTimeMillis();
+
 		while (!gameState.getString("comm_type").equals("MatchEnd")) {
+
+			long new_time = System.currentTimeMillis();
+			if (new_time - time > 3000) {
+				time = new_time;
+				System.out.println(gameState.toString(4));
+			}
+
 			if (gameState.has("players")) {
 				JSONArray players = gameState.getJSONArray("players");
 				for (int i = 0; i < players.length(); i++) {
