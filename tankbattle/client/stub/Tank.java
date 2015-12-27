@@ -134,6 +134,7 @@ public class Tank {
                 double difference = Math.min(this_tank.direction - perp_direction1, this_tank.direction - perp_direction2);
                 System.out.println(tankID + " " + this_tank.direction);
                 System.out.println(p.direction);
+                System.out.println(difference);
                 String rotate_tracks_command = command.rotate(tankID, "CW", difference, gameInfo.getClientToken());
                 commands.add(rotate_tracks_command);
 
