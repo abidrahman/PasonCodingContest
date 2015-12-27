@@ -29,13 +29,14 @@ public class Tank {
     }
 
     class TankData {
+        String id;
         Vector position = new Vector();
         double direction;
         // add more
     }
 
     private List<Projectile> projectiles = new ArrayList<Projectile>();
-    private TankData this_tank = new TankData();
+    public TankData this_tank = new TankData();
 
     public Tank(String tankID, GameInfo gameInfo) {
         this.tankID = tankID;

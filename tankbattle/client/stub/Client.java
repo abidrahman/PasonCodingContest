@@ -2,8 +2,10 @@ package tankbattle.client.stub;
 
 import org.json.*;
 import org.zeromq.ZMQ;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 final class Client
 {
@@ -13,7 +15,7 @@ final class Client
 		public static final String JOIN = "join";
 	}
 
-	private static List<Tank> tankList = new ArrayList<Tank>();
+	private static ArrayList<Tank> tankList = new ArrayList<Tank>();
 
 	private enum State {
 		MATCH_BEGIN, GAME_BEGIN, GAME_PLAY, GAME_END, MATCH_END
@@ -126,7 +128,29 @@ final class Client
 				}
 
 				// execute main game logic
-				for (Tank tank : tankList) {
+				Iterator<Tank> iter = tankList.iterator();
+				while (iter.hasNext()) {
+
+					Tank tank = iter.next();
+
+					JSONArray players = gameState.getJSONArray("players");
+					for (int i = 0; i < players.length(); i++) {
+						if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
+							JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
+							boolean found = false;
+							for (int j = 0; j < tanks.length(); j++) {
+
+								String tankID = tanks.getJSONObject(j).getString("id");
+								if (tankID.equals(tank.this_tank.id)) {
+									found = true;
+									break;
+								}
+
+							}
+							if (!found) iter.remove();
+						}
+					}
+
 					tank.update(gameState);
 					List<String> commands = new ArrayList<String>();
 					commands.addAll(tank.movement());
@@ -136,7 +160,39 @@ final class Client
 						String response = comm.send(cmd, "msg");
 					}
 
+
 				}
+//				for (Tank tank : tankList) {
+//
+//					JSONArray players = gameState.getJSONArray("players");
+//					for (int i = 0; i < players.length(); i++) {
+//						if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
+//							JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
+//							boolean found = false;
+//							for (int j = 0; j < tanks.length(); j++) {
+//
+//								String tankID = tanks.getJSONObject(j).getString("id");
+//								if (tankID.equals(tank.this_tank.id)) {
+//									found = true;
+//									break;
+//								}
+//
+//							}
+//							if (!found) tankList.remove(tank);
+//						}
+//					}
+//
+//
+//					tank.update(gameState);
+//					List<String> commands = new ArrayList<String>();
+//					commands.addAll(tank.movement());
+//					commands.addAll(tank.attack());
+//
+//					for (String cmd : commands) {
+//						String response = comm.send(cmd, "msg");
+//					}
+//
+//				}
 
 			}
 
