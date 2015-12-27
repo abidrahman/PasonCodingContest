@@ -28,6 +28,7 @@ final class Client
 			Client.run(args);
 		} catch (JSONException e ) {
 			System.out.println("JSON error. Terminating...");
+			System.out.println(e.getMessage());
 		}
 	}
 
