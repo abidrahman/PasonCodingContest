@@ -15,6 +15,9 @@ public class Tank {
     private Command command = new Command();
     private GameInfo gameInfo;
 
+    private static final String CW = "CW";
+    private static final String CCW = "CCW";
+
     Vector position = new Vector();
     double direction;
 
@@ -86,6 +89,7 @@ public class Tank {
         for (int i = 0; i < players.length(); i++) {
             JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
             for (int j = 0; j < tanks.length(); j++) {
+                if (tanks.getJSONObject(j).getString("id").equals(tankID)) continue; // do not dodge our own projectiles
                 JSONArray tank_projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
                 for (int k = 0; k < tank_projectiles.length(); k++) {
 
@@ -136,17 +140,14 @@ public class Tank {
                 System.out.println(p.direction);
                 System.out.println(difference);
 
-                String cw = "CW";
-                String ccw = "CCW";
-
-                String rot;
-                if (difference > 0) rot = cw;
+                String rotation;
+                if (difference > 0) rotation = CW;
                 else {
-                    rot = ccw;
+                    rotation = CCW;
                     difference = -difference;
                 }
 
-                String rotate_tracks_command = command.rotate(tankID, rot, difference, gameInfo.getClientToken());
+                String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
                 commands.add(rotate_tracks_command);
 
                 String moveCommand = command.move(tankID, "FWD", 2.5, gameInfo.getClientToken());
