@@ -56,8 +56,7 @@ public class Tank {
                     JSONObject projectile = tank_projectiles.getJSONObject(k);
                     Projectile p = new Projectile();
                     p.id = projectile.getString("id");
-                    p.position.x = projectile.getJSONArray("position").getDouble(0);
-                    p.position.y = projectile.getJSONArray("position").getDouble(1);
+
                     p.direction = projectile.getDouble("direction");
                     p.speed = projectile.getInt("speed");
                     p.range = projectile.getDouble("range");
