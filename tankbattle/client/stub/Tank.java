@@ -10,10 +10,13 @@ import java.lang.Math;
 
 public class Tank {
 
-    private String tankID;
+    public String tankID;
     private JSONObject gameState;
     private Command command = new Command();
     private GameInfo gameInfo;
+
+    Vector position = new Vector();
+    double direction;
 
     class Vector {
         double x;

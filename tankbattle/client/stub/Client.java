@@ -109,6 +109,8 @@ final class Client
 							String tankID = tanks.getJSONObject(j).getString("id");
 
 							Tank tank = new Tank(tankID, gameInfo);
+
+
 							tankList.add(tank);
 
 						}
@@ -137,11 +139,12 @@ final class Client
 					for (int i = 0; i < players.length(); i++) {
 						if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
 							JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
+
 							boolean found = false;
 							for (int j = 0; j < tanks.length(); j++) {
 
 								String tankID = tanks.getJSONObject(j).getString("id");
-								if (tankID.equals(tank.this_tank.id)) {
+								if (tankID.equals(tank.tankID)) {
 									found = true;
 									break;
 								}
