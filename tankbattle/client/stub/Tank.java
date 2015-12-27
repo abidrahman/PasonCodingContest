@@ -1,5 +1,7 @@
 package tankbattle.client.stub;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -12,6 +14,21 @@ public class Tank {
     private Command command = new Command();
     private GameInfo gameInfo;
 
+    class Vector {
+        double x;
+        double y;
+    }
+
+    class Projectile {
+        String id;
+        Vector position;
+        double range;
+        double direction;
+        int speed;
+    }
+
+    private List<Projectile> projectiles = new ArrayList<Projectile>();
+
     public Tank(String tankID, GameInfo gameInfo) {
         this.tankID = tankID;
         this.gameInfo = gameInfo;
@@ -21,8 +38,32 @@ public class Tank {
         System.out.println(this.tankID);
     }
 
-    public void update(JSONObject gameState) {
+    public void update(JSONObject gameState) throws JSONException {
         this.gameState = gameState;
+        this.updateProjectiles();
+
+    }
+
+
+    private void updateProjectiles() throws JSONException {
+        projectiles.clear();
+        JSONArray players = gameState.getJSONArray("players");
+        for (int i = 0; i < players.length(); i++) {
+            JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
+            for (int j = 0; j < tanks.length(); j++) {
+                JSONArray tank_projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
+                for (int k = 0; k < tank_projectiles.length(); k++) {
+                    JSONObject projectile = tank_projectiles.getJSONObject(k);
+                    Projectile p = new Projectile();
+                    p.id = projectile.getString("id");
+                    p.position.x = projectile.getJSONArray("position").getInt(0);
+                    p.position.y = projectile.getJSONArray("position").getInt(1);
+                    p.direction = projectile.getDouble("direction");
+                    p.speed = projectile.getInt("speed");
+                    p.range = projectile.getDouble("range");
+                }
+            }
+        }
     }
 
     public List<String> movement() {
@@ -30,6 +71,11 @@ public class Tank {
 
         // calculate the necessary movement
         // return the Strings needed to issue the commands
+
+        // check if any projectiles are headed towards this tank
+
+
+
 
         String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
         commands.add(moveCommand);
