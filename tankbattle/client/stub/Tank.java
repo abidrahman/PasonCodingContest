@@ -62,7 +62,7 @@ public class Tank {
                     if (tankID.equals(this.tankID)) {
                         this_tank.position.x = tank.getJSONArray("position").getDouble(0);
                         this_tank.position.y = tank.getJSONArray("position").getDouble(1);
-                        this_tank.direction = tank.getDouble("direction");
+                        this_tank.direction = tank.getDouble("tracks");
                     }
                 }
             }
