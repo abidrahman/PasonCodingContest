@@ -134,7 +134,6 @@ final class Client
 				while (iter.hasNext()) {
 					Tank tank = iter.next();
 
-
 					JSONArray players = gameState.getJSONArray("players");
 					for (int i = 0; i < players.length(); i++) {
 						if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
