@@ -110,7 +110,6 @@ final class Client
 
 							Tank tank = new Tank(tankID, gameInfo);
 
-
 							tankList.add(tank);
 
 						}
@@ -129,31 +128,29 @@ final class Client
 					continue;
 				}
 
-				// execute main game logic
+				// loop through current tanks
 				Iterator<Tank> iter = tankList.iterator();
 				while (iter.hasNext()) {
-
 					Tank tank = iter.next();
 
+					// make sure all current tanks still exist (they might have been destroyed)
 					JSONArray players = gameState.getJSONArray("players");
 					for (int i = 0; i < players.length(); i++) {
 						if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
 							JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
-
 							boolean found = false;
 							for (int j = 0; j < tanks.length(); j++) {
-
 								String tankID = tanks.getJSONObject(j).getString("id");
 								if (tankID.equals(tank.tankID)) {
 									found = true;
 									break;
 								}
-
 							}
 							if (!found) iter.remove();
 						}
 					}
 
+					// execute main game logic if tank exists
 					tank.update(gameState);
 					List<String> commands = new ArrayList<String>();
 					commands.addAll(tank.movement());
@@ -163,39 +160,27 @@ final class Client
 						String response = comm.send(cmd, "msg");
 					}
 
-
 				}
-//				for (Tank tank : tankList) {
 //
-//					JSONArray players = gameState.getJSONArray("players");
-//					for (int i = 0; i < players.length(); i++) {
-//						if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
-//							JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
-//							boolean found = false;
-//							for (int j = 0; j < tanks.length(); j++) {
-//
-//								String tankID = tanks.getJSONObject(j).getString("id");
-//								if (tankID.equals(tank.this_tank.id)) {
-//									found = true;
-//									break;
-//								}
-//
-//							}
-//							if (!found) tankList.remove(tank);
-//						}
-//					}
-//
-//
-//					tank.update(gameState);
-//					List<String> commands = new ArrayList<String>();
-//					commands.addAll(tank.movement());
-//					commands.addAll(tank.attack());
-//
-//					for (String cmd : commands) {
-//						String response = comm.send(cmd, "msg");
-//					}
-//
-//				}
+				// add any new tanks that were destroyed
+				JSONArray players = gameState.getJSONArray("players");
+				for (int i = 0; i < players.length(); i++) {
+					if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
+						JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
+						for (int j = 0; j < tanks.length(); j++) {
+							boolean found = false;
+							String tankID = tanks.getJSONObject(j).getString("id");
+							for (Tank tank : tankList) {
+								if (tankID.equals(tank.tankID)) {
+									found = true;
+									break;
+								}
+							}
+							if (!found) tankList.add(new Tank(tankID, gameInfo));
+						}
+
+					}
+				}
 
 			}
 
