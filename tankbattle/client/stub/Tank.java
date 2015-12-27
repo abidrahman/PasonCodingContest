@@ -32,7 +32,6 @@ public class Tank {
     }
 
     class TankData {
-        String id;
         Vector position = new Vector();
         double direction;
         // add more
@@ -53,7 +52,21 @@ public class Tank {
     public void update(JSONObject gameState) throws JSONException {
         this.gameState = gameState;
         this.updateProjectiles();
-
+        JSONArray players = gameState.getJSONArray("players");
+        for (int i = 0; i < players.length(); i++) {
+            if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
+                JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
+                for (int j = 0; j < tanks.length(); j++) {
+                    JSONObject tank = tanks.getJSONObject(j);
+                    String tankID = tank.getString("id");
+                    if (tankID.equals(this.tankID)) {
+                        this_tank.position.x = tank.getJSONArray("position").getDouble(0);
+                        this_tank.position.y = tank.getJSONArray("position").getDouble(1);
+                        this_tank.direction = tank.getDouble("direction");
+                    }
+                }
+            }
+        }
     }
 
     private double distance(Vector v1, Vector v2) {
