@@ -129,12 +129,12 @@ final class Client
 					continue;
 				}
 
-				// loop through current tanks
+				// make sure all current tanks still exist (they might have been destroyed)
 				Iterator<Tank> iter = tankList.iterator();
 				while (iter.hasNext()) {
 					Tank tank = iter.next();
 
-					// make sure all current tanks still exist (they might have been destroyed)
+
 					JSONArray players = gameState.getJSONArray("players");
 					for (int i = 0; i < players.length(); i++) {
 						if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
@@ -150,8 +150,13 @@ final class Client
 							if (!found) iter.remove();
 						}
 					}
+				}
 
-					// execute main game logic if tank exists
+				// execute main game logic if tank exists
+				iter = tankList.iterator();
+				while (iter.hasNext()) {
+					Tank tank = iter.next();
+
 					tank.update(gameState);
 					List<String> commands = new ArrayList<String>();
 					commands.addAll(tank.movement());
@@ -162,7 +167,7 @@ final class Client
 					}
 
 				}
-//
+
 				// add any new tanks that were destroyed
 				JSONArray players = gameState.getJSONArray("players");
 				for (int i = 0; i < players.length(); i++) {
@@ -191,56 +196,8 @@ final class Client
 			}
 
 		}
-
-//			while (!gameState.getString("comm_type").equals("MatchEnd")) {
-//
-//				long new_time = System.currentTimeMillis();
-//				if (new_time - time > 3000 && gameState.has("map")) {
-//					time = new_time;
-//					System.out.println(gameState.toString(4));
-//					JSONArray map_size = gameState.getJSONObject("map").getJSONArray("size");
-//					System.out.println(map_size.get(0));
-//					System.out.println(map_size.get(1));
-//				}
-//
-//				if (gameState.has("players")) {
-//					JSONArray players = gameState.getJSONArray("players");
-//					for (int i = 0; i < players.length(); i++) {
-//						if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
-//							JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
-//							for (int j = 0; j < tanks.length(); j++) {
-//
-//								String tankID = tanks.getJSONObject(j).getString("id");
-//
-//								String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
-//								comm.send(moveCommand, "comm_type");
-//								String rotate_command = command.rotateTurret(tankID, "CCW", 1, gameInfo.getClientToken());
-//								String fire_command = command.fire(tankID, gameInfo.getClientToken());
-//								comm.send(rotate_command, "comm_type");
-//								comm.send(fire_command, "comm_type");
-//								String rotate_tracks_command = command.rotate(tankID, "CCW", 1, gameInfo.getClientToken());
-//								comm.send(rotate_tracks_command, "comm_type");
-//
-//								JSONArray projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
-//								for (int k = 0; k < projectiles.length(); k++) {
-//									Object range = projectiles.getJSONObject(k).get("range");
-//									System.out.println(range);
-//								}
-//
-//							}
-//						}
-//					}
-//				}
-//
-//				gameState = comm.getJSONGameState(); // Blocking wait for game state example
-//			}
-
-		System.out.println("Received game state!");
 		
-		// Add your algorithm here
-		System.out.println("Missing algorithm.");
-		
-		System.out.println("Exiting...");
+		System.out.println("Match finished. Exiting...");
 	}
 
 	public static void printHelp()
