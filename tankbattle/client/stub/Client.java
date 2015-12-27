@@ -106,7 +106,7 @@ final class Client
 
 							String tankID = tanks.getJSONObject(j).getString("id");
 
-							Tank tank = new Tank(tankID);
+							Tank tank = new Tank(tankID, gameInfo);
 							tankList.add(tank);
 
 						}
@@ -128,9 +128,14 @@ final class Client
 				// execute main game logic
 				for (Tank tank : tankList) {
 					tank.update(gameState);
-					tank.movement();
-					tank.attack();
-					tank.printID();
+					List<String> commands = new ArrayList<String>();
+					commands.addAll(tank.movement());
+					commands.addAll(tank.attack());
+
+					for (String cmd : commands) {
+						String response = comm.send(cmd, "msg");
+					}
+
 				}
 
 			}
