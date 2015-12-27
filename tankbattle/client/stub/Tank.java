@@ -52,6 +52,14 @@ public class Tank {
 
     }
 
+    private double distance(Vector v1, Vector v2) {
+        return Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2));
+    }
+
+    private double dotProduct(Vector v1, Vector v2) {
+        return (v1.x * v2.x) + (v1.y * v2.y);
+    }
+
 
     private void updateProjectiles() throws JSONException {
 
@@ -89,17 +97,20 @@ public class Tank {
 
 
         // check if any projectiles are headed towards this tank
-        /*
+
         for (Projectile p : projectiles) {
+
+            if (distance(this_tank.position, p.position) > p.range) continue;
+
             double distance;
 
-            double a = -1 * (Math.tan(p.direction));
+            double a = -1.0 * (Math.tan(p.direction));
             double b = 1.0;
             double c = Math.tan(p.direction) * p.position.x - p.position.y;
 
             distance = Math.abs(a*this_tank.position.x + b*this_tank.position.y + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 
-            if (distance < 2.0) {
+            if (distance < 2.5) {
                 // calculate closest perpendicular direction
                 double perp_direction1 = p.direction + Math.PI / 2;
                 double perp_direction2 = p.direction - Math.PI / 2;
@@ -107,18 +118,12 @@ public class Tank {
 
                 String rotate_tracks_command = command.rotate(tankID, "CW", difference, gameInfo.getClientToken());
                 commands.add(rotate_tracks_command);
+
+                String moveCommand = command.move(tankID, "FWD", 0.1, gameInfo.getClientToken());
+                commands.add(moveCommand);
             }
 
         }
-        */
-
-        String rotate_tracks_command = command.rotate(tankID, "CW", 1.0, gameInfo.getClientToken());
-        commands.add(rotate_tracks_command);
-
-        String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
-        commands.add(moveCommand);
-
-
 
         return commands;
     }
