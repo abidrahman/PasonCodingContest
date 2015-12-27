@@ -52,7 +52,7 @@ final class Command
 	}
 	
 	// Movement
-	public String move(String tankID, String direction, int distance, String clientToken)
+	public String move(String tankID, String direction, double distance, String clientToken)
 	{
 		JSONObject json = new JSONObject();
 		
@@ -71,7 +71,7 @@ final class Command
 	}
 	
 	// Tank Rotation
-	public String rotate(String tankID, String direction, int rads, String clientToken)
+	public String rotate(String tankID, String direction, double rads, String clientToken)
 	{
 		JSONObject json = new JSONObject();
 		
@@ -90,7 +90,7 @@ final class Command
 	}
 	
 	// Turret Rotation
-	public String rotateTurret(String tankID, String direction, int rads, String clientToken)
+	public String rotateTurret(String tankID, String direction, double rads, String clientToken)
 	{
 		JSONObject json = new JSONObject();
 		

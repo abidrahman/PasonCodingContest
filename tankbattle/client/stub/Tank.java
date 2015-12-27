@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.Math;
 
 public class Tank {
 
@@ -27,7 +28,14 @@ public class Tank {
         int speed;
     }
 
+    class TankData {
+        Vector position = new Vector();
+        double direction;
+        // add more
+    }
+
     private List<Projectile> projectiles = new ArrayList<Projectile>();
+    private TankData this_tank = new TankData();
 
     public Tank(String tankID, GameInfo gameInfo) {
         this.tankID = tankID;
@@ -46,13 +54,17 @@ public class Tank {
 
 
     private void updateProjectiles() throws JSONException {
-        projectiles.clear();
+
+        this.projectiles.clear(); // clear old projectiles because I am lazy to optimize updating
+
         JSONArray players = gameState.getJSONArray("players");
         for (int i = 0; i < players.length(); i++) {
             JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
             for (int j = 0; j < tanks.length(); j++) {
                 JSONArray tank_projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
                 for (int k = 0; k < tank_projectiles.length(); k++) {
+
+                    //create projectile object and update with new info
                     JSONObject projectile = tank_projectiles.getJSONObject(k);
                     Projectile p = new Projectile();
                     p.id = projectile.getString("id");
@@ -61,6 +73,9 @@ public class Tank {
                     p.direction = projectile.getDouble("direction");
                     p.speed = projectile.getInt("speed");
                     p.range = projectile.getDouble("range");
+
+                    // add the projectile
+                    this.projectiles.add(p);
                 }
             }
         }
@@ -72,16 +87,38 @@ public class Tank {
         // calculate the necessary movement
         // return the Strings needed to issue the commands
 
+
         // check if any projectiles are headed towards this tank
+        /*
+        for (Projectile p : projectiles) {
+            double distance;
 
+            double a = -1 * (Math.tan(p.direction));
+            double b = 1.0;
+            double c = Math.tan(p.direction) * p.position.x - p.position.y;
 
+            distance = Math.abs(a*this_tank.position.x + b*this_tank.position.y + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 
+            if (distance < 2.0) {
+                // calculate closest perpendicular direction
+                double perp_direction1 = p.direction + Math.PI / 2;
+                double perp_direction2 = p.direction - Math.PI / 2;
+                double difference = Math.min(this_tank.direction - perp_direction1, this_tank.direction - perp_direction2);
+
+                String rotate_tracks_command = command.rotate(tankID, "CW", difference, gameInfo.getClientToken());
+                commands.add(rotate_tracks_command);
+            }
+
+        }
+        */
+
+        String rotate_tracks_command = command.rotate(tankID, "CW", 1.0, gameInfo.getClientToken());
+        commands.add(rotate_tracks_command);
 
         String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
         commands.add(moveCommand);
 
-        String rotate_tracks_command = command.rotate(tankID, "CCW", 1, gameInfo.getClientToken());
-        commands.add(rotate_tracks_command);
+
 
         return commands;
     }
