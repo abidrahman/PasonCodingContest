@@ -87,7 +87,7 @@ final class Communication
 		try {
 			value = json.getString(key);
 		} catch(JSONException e) {
-			System.out.println("reply");
+			System.out.println(reply);
 			System.err.println("[Communication send] couldn't extract value for key: " + key + " from reply");
 			return null;
 		}
