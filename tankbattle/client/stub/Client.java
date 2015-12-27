@@ -178,7 +178,6 @@ final class Client
 							}
 							if (!found) tankList.add(new Tank(tankID, gameInfo));
 						}
-
 					}
 				}
 
