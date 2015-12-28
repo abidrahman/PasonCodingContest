@@ -251,6 +251,7 @@ public class Tank {
                         }
 
                         return angle_difference;
+                        System.out.println(angle_difference);
 
 
                     }
