@@ -163,6 +163,7 @@ public class Tank {
     }
     
     ArrayList<Vector> enemy_tank_coordinates = new ArrayList<>();
+    Vector coords = new Vector();
 
     private void update_enemy() throws JSONException {
 
@@ -176,7 +177,6 @@ public class Tank {
                     JSONArray enemy_tanks = players.getJSONObject(i).getJSONArray("tanks");
                     for (int j = 0; j < enemy_tanks.length(); j++) {
                         JSONArray tank_coordinate = enemy_tanks.getJSONObject(j).getJSONArray("position");
-                        Vector coords = new Vector();
                         coords.x = tank_coordinate.getInt(0);
                         coords.y = tank_coordinate.getInt(1);
                         this.enemy_tank_coordinates.add(coords);
@@ -201,13 +201,9 @@ public class Tank {
                         closest_distance = 1280;
                         enemy.x = 0;
                         enemy.y = 0;
-                        JSONArray my_tank_coordinate = my_tanks.getJSONObject(j).getJSONArray("position");
-                        Vector my_coords = new Vector();
-                        my_coords.x = my_tank_coordinate.getInt(0);
-                        my_coords.y = my_tank_coordinate.getInt(1);
 
                         for (Vector e : enemy_tank_coordinates) {
-                            distance = distance(e, my_coords);
+                            distance = distance(e, this_tank.position);
                             if (distance < closest_distance) {
                                 closest_distance = distance;
                                 enemy.x = e.x;
@@ -237,18 +233,15 @@ public class Tank {
                         //Bottom-Right QUAD
                         if (angle_needed < 0 && enemy.y < 0) angle_needed = 2*Math.PI + angle_needed;
                         
+            
                         if (current_angle > angle_needed) angle_difference = current_angle - angle_needed;
                         else angle_difference = 2*Math.PI - (angle_needed - current_angle);
                         
                         return angle_difference;
-                        
-
-
                     }
                 }
             }
         }
-
         return 0.0;
     }
 
@@ -259,9 +252,6 @@ public class Tank {
         // return the Strings needed to issue the commands
 
         update_enemy();
-        
-        
-                        
         double closest_enemy = find_closest_enemy();
                         
         if (closest_enemy <= 0.2 || closest_enemy >= 2*Math.PI) {
