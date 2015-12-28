@@ -264,13 +264,13 @@ public class Tank {
         double closest_enemy = find_closest_enemy();
         System.out.println(closest_enemy);
         
-        if (closest_enemy <= 0.2) {
+        if (closest_enemy <= 0.2 || closest_enemy >= 2*Math.PI) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
         } else if (closest_enemy < Math.PI && closest_enemy > 0.2) {
             String rotate_command = command.rotateTurret(tankID, "CW", closest_enemy, gameInfo.getClientToken());
             commands.add(rotate_command);
-        } else if (closest_enemy >= Math.PI) {
+        } else if (closest_enemy >= Math.PI && closest_enemy < 2*Math.PI) {
             String rotate_command = command.rotateTurret(tankID, "CCW", 2*Math.PI - closest_enemy, gameInfo.getClientToken());
             commands.add(rotate_command);
         }
