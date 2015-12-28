@@ -261,11 +261,12 @@ public class Tank {
         // return the Strings needed to issue the commands
 
         update_enemy();
+        double closest_enemy = find_closest_enemy();
 
-        String rotate_command = command.rotateTurret(tankID, "CW", find_closest_enemy(), gameInfo.getClientToken());
+        String rotate_command = command.rotateTurret(tankID, "CW", closest_enemy, gameInfo.getClientToken());
         commands.add(rotate_command);
 
-        if (find_closest_enemy() == 0) {
+        if (closest_enemy == 0) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
         }
