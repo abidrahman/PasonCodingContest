@@ -188,6 +188,7 @@ public class Tank {
 
     Vector enemy = new Vector();
     double closest_distance;
+    double distance;
 
     private Double find_closest_enemy() throws JSONException {
 
@@ -206,7 +207,7 @@ public class Tank {
                         my_coords.y = my_tank_coordinate.getInt(1);
 
                         for (Vector e : enemy_tank_coordinates) {
-                            double distance = distance(e, my_coords);
+                            distance = distance(e, my_coords);
                             if (distance < closest_distance) {
                                 closest_distance = distance;
                                 enemy.x = e.x;
@@ -240,14 +241,14 @@ public class Tank {
                         
                         //Bottom-Left QUAD
                         if (angle_needed > 0 && enemy.y <= 0) {
-                            if (current_angle > (Math.PI + angle_needed)) angle_difference = current_angle - (Math.PI + angle_needed) - Math.PI;
-                            else angle_difference = Math.PI - ((Math.PI + angle_needed) - current_angle);
+                            if (current_angle > (Math.PI + angle_needed)) angle_difference = current_angle - (Math.PI + angle_needed);
+                            else angle_difference = 2*Math.PI - ((Math.PI + angle_needed) - current_angle);
                         }
 
                         //Bottom-Right QUAD
                         if (angle_needed < 0 && enemy.y < 0) {
-                            if (current_angle > (2*Math.PI + angle_needed)) angle_difference = current_angle - (2*Math.PI + angle_needed) - Math.PI;
-                            else angle_difference = Math.PI - ((2*Math.PI + angle_needed) - current_angle);
+                            if (current_angle > (2*Math.PI + angle_needed)) angle_difference = current_angle - (2*Math.PI + angle_needed);
+                            else angle_difference = 2*Math.PI - ((2*Math.PI + angle_needed) - current_angle);
                         }
                         
                         System.out.println(angle_difference);
@@ -270,21 +271,30 @@ public class Tank {
         // return the Strings needed to issue the commands
 
         update_enemy();
-        double closest_enemy = find_closest_enemy();
         
-        if (closest_enemy <= 0.2 || closest_enemy >= 2*Math.PI) {
-            String fire_command = command.fire(tankID, gameInfo.getClientToken());
-            commands.add(fire_command);
-        } else if (closest_enemy < Math.PI && closest_enemy > 0.2) {
-            String rotate_command = command.rotateTurret(tankID, "CW", closest_enemy, gameInfo.getClientToken());
-            commands.add(rotate_command);
-        } else if (closest_enemy >= Math.PI && closest_enemy < 2*Math.PI) {
-            String rotate_command = command.rotateTurret(tankID, "CCW", 2*Math.PI - closest_enemy, gameInfo.getClientToken());
-            commands.add(rotate_command);
+        if (gameState.has("players")) {
+            JSONArray players = gameState.getJSONArray("players");
+            for (int i = 0; i < players.length(); i++) {
+                if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
+                    JSONArray my_tanks = players.getJSONObject(i).getJSONArray("tanks");
+                    for (int j = 0; j < my_tanks.length(); j++) {
+                        
+                        double closest_enemy = find_closest_enemy();
+                        
+                        if (closest_enemy <= 0.2 || closest_enemy >= 2*Math.PI) {
+                            String fire_command = command.fire(tankID, gameInfo.getClientToken());
+                            commands.add(fire_command);
+                        } else if (closest_enemy < Math.PI && closest_enemy > 0.2) {
+                            String rotate_command = command.rotateTurret(tankID, "CW", closest_enemy, gameInfo.getClientToken());
+                            commands.add(rotate_command);
+                        } else if (closest_enemy >= Math.PI && closest_enemy < 2*Math.PI) {
+                            String rotate_command = command.rotateTurret(tankID, "CCW", 2*Math.PI - closest_enemy, gameInfo.getClientToken());
+                            commands.add(rotate_command);
+                        }
+                    }
+                }
+            }
         }
-        
-
-        
 
         return commands;
     }
