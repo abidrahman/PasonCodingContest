@@ -239,14 +239,14 @@ public class Tank {
                         
                         //Bottom-Left QUAD
                         if (angle_needed > 0 && enemy.y <= 0) {
-                            if (current_angle > (Math.PI + angle_needed)) angle_difference = Math.PI + current_angle - (Math.PI + angle_needed);
-                            else angle_difference = Math.PI - ((Math.PI + angle_needed) - current_angle);
+                            if (current_angle > (Math.PI + angle_needed)) angle_difference = current_angle - (Math.PI + angle_needed);
+                            else angle_difference = 2*Math.PI - ((Math.PI + angle_needed) - current_angle);
                         }
 
                         //Bottom-Right QUAD
                         if (angle_needed < 0 && enemy.y < 0) {
-                            if (current_angle > (2*Math.PI + angle_needed)) angle_difference = Math.PI + current_angle - (2*Math.PI + angle_needed);
-                            else angle_difference = Math.PI - ((2*Math.PI + angle_needed) - current_angle);
+                            if (current_angle > (2*Math.PI + angle_needed)) angle_difference = current_angle - (2*Math.PI + angle_needed);
+                            else angle_difference = 2*Math.PI - ((2*Math.PI + angle_needed) - current_angle);
                         }
 
                         return angle_difference;
@@ -268,7 +268,10 @@ public class Tank {
 
         update_enemy();
         double closest_enemy = find_closest_enemy();
-        System.out.println(closest_enemy);
+
+        
+        //if (enemy.y < 0) closest_enemy = closest_enemy + Math.PI;
+        //System.out.println(closest_enemy);
         
         if (closest_enemy <= 0.2 || closest_enemy >= 2*Math.PI) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
