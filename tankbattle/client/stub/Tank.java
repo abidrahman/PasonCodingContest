@@ -192,57 +192,46 @@ public class Tank {
 
     private Double find_closest_enemy() throws JSONException {
 
-        if (gameState.has("players")) {
-            JSONArray players = gameState.getJSONArray("players");
-            for (int i = 0; i < players.length(); i++) {
-                if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
-                    JSONArray my_tanks = players.getJSONObject(i).getJSONArray("tanks");
-                    for (int j = 0; j < my_tanks.length(); j++) {
-                        closest_distance = 1280;
-                        enemy.x = 0;
-                        enemy.y = 0;
+        closest_distance = 1280;
+        enemy.x = 0;
+        enemy.y = 0;
 
-                        for (Vector e : enemy_tank_coordinates) {
-                            distance = distance(e, this_tank.position);
-                            if (distance < closest_distance) {
-                                closest_distance = distance;
-                                enemy.x = e.x;
-                                enemy.y = e.y;
-                            }
-                        }
-
-                        //Calculate closest enemy's position relative to ours.
-                        double Ox = enemy.x - this_tank.position.x;
-                        double Oy = enemy.y - this_tank.position.y;
-
-                        double angle_needed = Math.atan(Oy/Ox);
-                        double current_angle = this_tank.turret;
-                        System.out.println(current_angle);
-                        double angle_difference = 0;
-
-                        //Calculate angle difference depending on quadrant enemy is in.
-                        //angle_difference is the angle (in rad) between the current turret angle and needed turret angle
-                        //counting CLOCKWWISE FROM turret angle TO needed turret angle.
-
-                        //Top-Right QUAD
-                        //Nothing changes.
-
-                        //Top-Left QUAD & Bottom-left QUAD
-                        if (angle_needed < 0 && enemy.y > 0 || angle_needed > 0 && enemy.y <= 0) angle_needed = Math.PI + angle_needed;
-                        
-                        //Bottom-Right QUAD
-                        if (angle_needed < 0 && enemy.y < 0) angle_needed = 2*Math.PI + angle_needed;
-                        
-            
-                        if (current_angle > angle_needed) angle_difference = current_angle - angle_needed;
-                        else angle_difference = 2*Math.PI - (angle_needed - current_angle);
-                        
-                        return angle_difference;
-                    }
-                }
+        for (Vector e : enemy_tank_coordinates) {
+            distance = distance(e, this_tank.position);
+            if (distance < closest_distance) {
+                closest_distance = distance;
+                enemy.x = e.x;
+                enemy.y = e.y;
             }
         }
-        return 0.0;
+
+        //Calculate closest enemy's position relative to ours.
+        double Ox = enemy.x - this_tank.position.x;
+        double Oy = enemy.y - this_tank.position.y;
+
+        double angle_needed = Math.atan(Oy/Ox);
+        double current_angle = this_tank.turret;
+        System.out.println(current_angle);
+        double angle_difference = 0;
+
+        //Calculate angle difference depending on quadrant enemy is in.
+        //angle_difference is the angle (in rad) between the current turret angle and needed turret angle
+        //counting CLOCKWWISE FROM turret angle TO needed turret angle.
+
+        //Top-Right QUAD
+        //Nothing changes.
+
+        //Top-Left QUAD & Bottom-left QUAD
+        if (angle_needed < 0 && Oy > 0 || angle_needed > 0 && Oy <= 0) angle_needed = Math.PI + angle_needed;
+
+        //Bottom-Right QUAD
+        if (angle_needed < 0 && Oy < 0) angle_needed = 2*Math.PI + angle_needed;
+
+
+        if (current_angle > angle_needed) angle_difference = current_angle - angle_needed;
+        else angle_difference = 2*Math.PI - (angle_needed - current_angle);
+
+        return angle_difference;
     }
 
     public List<String> attack() throws JSONException {
