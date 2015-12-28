@@ -186,9 +186,9 @@ public class Tank {
         }
     }
 
-    Vector enemy = new Vector();
-    double closest_distance;
-    double distance;
+    private Vector enemy = new Vector();
+    private double closest_distance;
+    private double distance;
 
     private double find_closest_enemy() throws JSONException {
 
