@@ -190,7 +190,7 @@ public class Tank {
     double closest_distance;
     double distance;
 
-    private Double find_closest_enemy() throws JSONException {
+    private double find_closest_enemy() throws JSONException {
 
         closest_distance = 1280;
         enemy.x = 0;
@@ -240,7 +240,6 @@ public class Tank {
         // calculate the necessary attack (turret rotate, fire)
         // return the Strings needed to issue the commands
 
-        update_enemy();
         double closest_enemy = find_closest_enemy();
                         
         if (closest_enemy <= 0.2 || closest_enemy >= 2*Math.PI) {
