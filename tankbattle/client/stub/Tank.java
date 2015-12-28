@@ -163,7 +163,6 @@ public class Tank {
     }
     
     ArrayList<Vector> enemy_tank_coordinates = new ArrayList<>();
-    Vector coords = new Vector();
 
     private void update_enemy() throws JSONException {
 
@@ -176,6 +175,7 @@ public class Tank {
                 if (!players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
                     JSONArray enemy_tanks = players.getJSONObject(i).getJSONArray("tanks");
                     for (int j = 0; j < enemy_tanks.length(); j++) {
+                        Vector coords = new Vector();
                         JSONArray tank_coordinate = enemy_tanks.getJSONObject(j).getJSONArray("position");
                         coords.x = tank_coordinate.getInt(0);
                         coords.y = tank_coordinate.getInt(1);
