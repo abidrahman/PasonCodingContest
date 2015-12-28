@@ -249,9 +249,10 @@ public class Tank {
                             if (current_angle > (2*Math.PI + angle_needed)) angle_difference = current_angle - (2*Math.PI + angle_needed) - Math.PI;
                             else angle_difference = Math.PI - ((2*Math.PI + angle_needed) - current_angle);
                         }
-
-                        return angle_difference;
+                        
                         System.out.println(angle_difference);
+                        return angle_difference;
+                        
 
 
                     }
