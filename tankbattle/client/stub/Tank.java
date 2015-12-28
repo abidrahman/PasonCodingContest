@@ -205,7 +205,6 @@ public class Tank {
                         my_coords.y = my_tank_coordinate.getInt(1);
 
                         for (Vector e : enemy_tank_coordinates) {
-                            System.out.println(e.x);
                             double distance = distance(e, my_coords);
                             if (distance < closest_distance) {
                                 closest_distance = distance;
@@ -263,11 +262,18 @@ public class Tank {
 
         update_enemy();
         double closest_enemy = find_closest_enemy();
+        Serial.out.println(closest_enemy);
+        
+        if (closest_enemy < Math.PI && closest_enemy > 0.2) {
+            String rotate_command = command.rotateTurret(tankID, "CW", closest_enemy, gameInfo.getClientToken());
+            commands.add(rotate_command);
+        } else if (closest_enemy >= Math.PI) {
+            String rotate_command = command.rotateTurret(tankID, "CCW", 2*Math.PI - closest_enemy, gameInfo.getClientToken());
+            commands.add(rotate_command);
+        }
+        
 
-        String rotate_command = command.rotateTurret(tankID, "CW", closest_enemy, gameInfo.getClientToken());
-        commands.add(rotate_command);
-
-        if (closest_enemy == 0) {
+        if (closest_enemy <= 0.2) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
         }
