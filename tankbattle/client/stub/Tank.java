@@ -216,6 +216,8 @@ public class Tank {
                         //Calculate closest enemy's position relative to ours.
                         double Ox = enemy.x - this_tank.position.x;
                         double Oy = enemy.y - this_tank.position.y;
+                        System.out.println(Ox);
+                        System.out.println(Oy);
 
                         double angle_needed = Math.PI*(Math.atan(Oy/Ox)/180);
                         double angle_difference = 0;
@@ -262,7 +264,6 @@ public class Tank {
 
         update_enemy();
         double closest_enemy = find_closest_enemy();
-        System.out.println(closest_enemy);
         
         if (closest_enemy <= 0.2 || closest_enemy >= 2*Math.PI) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
