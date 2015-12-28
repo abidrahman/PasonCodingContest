@@ -219,8 +219,6 @@ public class Tank {
 
                         double angle_needed = Math.atan(Oy/Ox);
                         double current_angle = this_tank.turret;
-                        System.out.println(angle_needed);
-                        System.out.println(current_angle);
                         double angle_difference = 0;
 
                         //Calculate angle difference depending on quadrant enemy is in.
@@ -233,8 +231,14 @@ public class Tank {
                             else angle_difference = 2*Math.PI - (angle_needed - current_angle);
                         }
 
-                        //Top and Bottom Left QUADS
+                        //Top-Left QUAD
                         if ((angle_needed < 0 && enemy.y > 0) || (angle_needed > 0 && enemy.y <= 0)) {
+                            if (current_angle > (Math.PI + angle_needed)) angle_difference = current_angle - (Math.PI + angle_needed);
+                            else angle_difference = 2*Math.PI - ((Math.PI + angle_needed) - current_angle);
+                        }
+                        
+                        //Bottom-Left QUAD
+                        if (angle_needed > 0 && enemy.y <= 0) {
                             if (current_angle > (Math.PI + angle_needed)) angle_difference = current_angle - (Math.PI + angle_needed);
                             else angle_difference = 2*Math.PI - ((Math.PI + angle_needed) - current_angle);
                         }
@@ -264,6 +268,7 @@ public class Tank {
 
         update_enemy();
         double closest_enemy = find_closest_enemy();
+        System.out.println(closest_enemy);
         
         if (closest_enemy <= 0.2 || closest_enemy >= 2*Math.PI) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
