@@ -191,14 +191,15 @@ public class Tank {
 
     private Double find_closest_enemy() throws JSONException {
 
-        closest_distance = 1280;
-
         if (gameState.has("players")) {
             JSONArray players = gameState.getJSONArray("players");
             for (int i = 0; i < players.length(); i++) {
                 if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
                     JSONArray my_tanks = players.getJSONObject(i).getJSONArray("tanks");
                     for (int j = 0; j < my_tanks.length(); j++) {
+                        closest_distance = 1280;
+                        enemy.x = 0;
+                        enemy.y = 0;
                         JSONArray my_tank_coordinate = my_tanks.getJSONObject(j).getJSONArray("position");
                         Vector my_coords = new Vector();
                         my_coords.x = my_tank_coordinate.getInt(0);
