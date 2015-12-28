@@ -239,14 +239,14 @@ public class Tank {
                         
                         //Bottom-Left QUAD
                         if (angle_needed > 0 && enemy.y <= 0) {
-                            if (current_angle > (Math.PI + angle_needed)) angle_difference = current_angle - (Math.PI + angle_needed);
-                            else angle_difference = 2*Math.PI - ((Math.PI + angle_needed) - current_angle);
+                            if (current_angle > (Math.PI + angle_needed)) angle_difference = Math.PI + current_angle - (Math.PI + angle_needed);
+                            else angle_difference = Math.PI - ((Math.PI + angle_needed) - current_angle);
                         }
 
                         //Bottom-Right QUAD
                         if (angle_needed < 0 && enemy.y < 0) {
-                            if (current_angle > (2*Math.PI + angle_needed)) angle_difference = current_angle - (2*Math.PI + angle_needed);
-                            else angle_difference = 2*Math.PI - ((2*Math.PI + angle_needed) - current_angle);
+                            if (current_angle > (2*Math.PI + angle_needed)) angle_difference = Math.PI + current_angle - (2*Math.PI + angle_needed);
+                            else angle_difference = Math.PI - ((2*Math.PI + angle_needed) - current_angle);
                         }
 
                         return angle_difference;
