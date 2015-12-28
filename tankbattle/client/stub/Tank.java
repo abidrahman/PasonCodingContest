@@ -217,11 +217,11 @@ public class Tank {
                         double Ox = enemy.x - this_tank.position.x;
                         double Oy = enemy.y - this_tank.position.y;
 
-                        double angle_needed = Math.PI*(Math.atan(Oy/Ox)/180);
-                        double angle_difference = 0;
+                        double angle_needed = Math.atan(Oy/Ox);
                         double current_angle = this_tank.turret;
                         System.out.println(angle_needed);
                         System.out.println(current_angle);
+                        double angle_difference = 0;
 
                         //Calculate angle difference depending on quadrant enemy is in.
                         //angle_difference is the angle (in rad) between the current turret angle and needed turret angle
