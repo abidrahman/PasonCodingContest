@@ -202,8 +202,11 @@ public class Tank {
                 closest_distance = distance;
                 enemy.x = e.x;
                 enemy.y = e.y;
+
             }
         }
+        System.out.println(enemy.x);
+        System.out.println(enemy.y);
 
         //Calculate closest enemy's position relative to ours.
         double Ox = enemy.x - this_tank.position.x;
@@ -211,7 +214,7 @@ public class Tank {
 
         double angle_needed = Math.atan(Oy/Ox);
         double current_angle = this_tank.turret;
-        System.out.println(current_angle);
+
         double angle_difference = 0;
 
         //Calculate angle difference depending on quadrant enemy is in.
