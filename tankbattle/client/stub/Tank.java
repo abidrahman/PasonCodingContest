@@ -228,28 +228,16 @@ public class Tank {
                         //counting CLOCKWWISE FROM turret angle TO needed turret angle.
 
                         //Top-Right QUAD
-                        if (angle_needed > 0 && enemy.y >= 0) {
-                            if (current_angle > angle_needed) angle_difference = current_angle - angle_needed;
-                            else angle_difference = 2*Math.PI - (angle_needed - current_angle);
-                        }
+                        //Nothing changes.
 
-                        //Top-Left QUAD
-                        if ((angle_needed < 0 && enemy.y > 0) || (angle_needed > 0 && enemy.y <= 0)) {
-                            if (current_angle > (Math.PI + angle_needed)) angle_difference = current_angle - (Math.PI + angle_needed);
-                            else angle_difference = 2*Math.PI - ((Math.PI + angle_needed) - current_angle);
-                        }
+                        //Top-Left QUAD & Bottom-left QUAD
+                        if (angle_needed < 0 && enemy.y > 0 || angle_needed > 0 && enemy.y <= 0) angle_needed = Math.PI + angle_needed;
                         
-                        //Bottom-Left QUAD
-                        if (angle_needed > 0 && enemy.y <= 0) {
-                            if (current_angle > (Math.PI + angle_needed)) angle_difference = current_angle - (Math.PI + angle_needed);
-                            else angle_difference = 2*Math.PI - ((Math.PI + angle_needed) - current_angle);
-                        }
-
                         //Bottom-Right QUAD
-                        if (angle_needed < 0 && enemy.y < 0) {
-                            if (current_angle > (2*Math.PI + angle_needed)) angle_difference = current_angle - (2*Math.PI + angle_needed);
-                            else angle_difference = 2*Math.PI - ((2*Math.PI + angle_needed) - current_angle);
-                        }
+                        if (angle_needed < 0 && enemy.y < 0) angle_needed = 2*Math.PI + angle_needed;
+                        
+                        if (current_angle > angle_needed) angle_difference = current_angle - angle_needed;
+                        else angle_difference = 2*Math.PI - (angle_needed - current_angle);
                         
                         System.out.println(angle_difference);
                         return angle_difference;
