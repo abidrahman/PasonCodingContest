@@ -175,7 +175,7 @@ public class Tank {
                 if (!players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
                     JSONArray enemy_tanks = players.getJSONObject(i).getJSONArray("tanks");
                     for (int j = 0; j < enemy_tanks.length(); j++) {
-                        JSONArray tank_coordinate = enemy_tanks.getJSONArray(j);
+                        JSONArray tank_coordinate = enemy_tanks.getJSONObject(j).getJSONArray("position");
                         Vector coords = new Vector();
                         coords.x = tank_coordinate.getInt(0);
                         coords.y = tank_coordinate.getInt(1);
@@ -199,7 +199,7 @@ public class Tank {
                 if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
                     JSONArray my_tanks = players.getJSONObject(i).getJSONArray("tanks");
                     for (int j = 0; j < my_tanks.length(); j++) {
-                        JSONArray my_tank_coordinate = my_tanks.getJSONArray(j);
+                        JSONArray my_tank_coordinate = my_tanks.getJSONObject(j).getJSONArray("position");
                         Vector my_coords = new Vector();
                         my_coords.x = my_tank_coordinate.getInt(0);
                         my_coords.y = my_tank_coordinate.getInt(1);
