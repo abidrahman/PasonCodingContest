@@ -245,7 +245,7 @@ public class Tank {
 
         double closest_enemy = find_closest_enemy();
                         
-        if (closest_enemy <= 0.2 || closest_enemy >= 2*Math.PI) {
+        if (closest_enemy <= 0.08 || closest_enemy >= 2*Math.PI) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
         } else if (closest_enemy < Math.PI && closest_enemy > 0.2) {
