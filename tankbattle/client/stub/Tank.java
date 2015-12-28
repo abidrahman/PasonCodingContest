@@ -37,6 +37,7 @@ public class Tank {
     class TankData {
         Vector position = new Vector();
         double direction;
+        double turret;
         // add more
     }
 
@@ -55,6 +56,7 @@ public class Tank {
     public void update(JSONObject gameState) throws JSONException {
         this.gameState = gameState;
         this.updateProjectiles();
+        this.update_enemy();
         JSONArray players = gameState.getJSONArray("players");
         for (int i = 0; i < players.length(); i++) {
             if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
@@ -66,6 +68,7 @@ public class Tank {
                         this_tank.position.x = tank.getJSONArray("position").getDouble(0);
                         this_tank.position.y = tank.getJSONArray("position").getDouble(1);
                         this_tank.direction = tank.getDouble("tracks");
+                        this_tank.turret = tank.getDouble("turret");
                     }
                 }
             }
@@ -158,18 +161,114 @@ public class Tank {
 
         return commands;
     }
+    
+    ArrayList<Vector> enemy_tank_coordinates = new ArrayList<>();
 
-    public List<String> attack() {
+    private void update_enemy() throws JSONException {
+
+        this.enemy_tank_coordinates.clear();
+
+        if (gameState.has("players")) {
+            JSONArray players = gameState.getJSONArray("players");
+            for (int i = 0; i < players.length(); i++) {
+
+                if (!players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
+                    JSONArray enemy_tanks = players.getJSONObject(i).getJSONArray("tanks");
+                    for (int j = 0; j < enemy_tanks.length(); j++) {
+                        JSONArray tank_coordinate = enemy_tanks.getJSONArray(j);
+                        Vector coords = new Vector();
+                        coords.x = tank_coordinate.getInt(0);
+                        coords.y = tank_coordinate.getInt(1);
+                        this.enemy_tank_coordinates.add(coords);
+                    }
+                }
+            }
+        }
+    }
+
+    Vector enemy;
+    double closest_distance;
+
+    private Double find_closest_enemy() throws JSONException {
+
+        closest_distance = 1280;
+
+        if (gameState.has("players")) {
+            JSONArray players = gameState.getJSONArray("players");
+            for (int i = 0; i < players.length(); i++) {
+                if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
+                    JSONArray my_tanks = players.getJSONObject(i).getJSONArray("tanks");
+                    for (int j = 0; j < my_tanks.length(); j++) {
+                        JSONArray my_tank_coordinate = my_tanks.getJSONArray(j);
+                        Vector my_coords = new Vector();
+                        my_coords.x = my_tank_coordinate.getInt(0);
+                        my_coords.y = my_tank_coordinate.getInt(1);
+
+                        for (Vector e : enemy_tank_coordinates) {
+                            double distance = distance(e, my_coords);
+                            if (distance < closest_distance) {
+                                closest_distance = distance;
+                                enemy.x = e.x;
+                                enemy.y = e.y;
+                            }
+                        }
+
+                        //Calculate closest enemy's position relative to ours.
+                        double Ox = enemy.x - this_tank.position.x;
+                        double Oy = enemy.y - this_tank.position.y;
+
+                        double angle_needed = Math.PI*(Math.atan(Oy/Ox)/180);
+                        double angle_difference = 0;
+                        double current_angle = this_tank.turret;
+
+                        //Calculate angle difference depending on quadrant enemy is in.
+                        //angle_difference is the angle (in rad) between the current turret angle and needed turret angle
+                        //counting CLOCKWWISE FROM turret angle TO needed turret angle.
+
+                        //Top-Right QUAD
+                        if (angle_needed > 0 && enemy.y >= 0) {
+                            if (current_angle > angle_needed) angle_difference = current_angle - angle_needed;
+                            else angle_difference = 2*Math.PI - (angle_needed - current_angle);
+                        }
+
+                        //Top and Bottom Left QUADS
+                        if ((angle_needed < 0 && enemy.y > 0) || (angle_needed > 0 && enemy.y <= 0)) {
+                            if (current_angle > (Math.PI + angle_needed)) angle_difference = current_angle - (Math.PI + angle_needed);
+                            else angle_difference = 2*Math.PI - ((Math.PI + angle_needed) - current_angle);
+                        }
+
+                        //Bottom-Right QUAD
+                        if (angle_needed < 0 && enemy.y < 0) {
+                            if (current_angle > (2*Math.PI + angle_needed)) angle_difference = current_angle - (2*Math.PI + angle_needed);
+                            else angle_difference = 2*Math.PI - ((2*Math.PI + angle_needed) - current_angle);
+                        }
+
+                        return angle_difference;
+
+
+                    }
+                }
+            }
+        }
+
+        return 0.0;
+    }
+
+    public List<String> attack() throws JSONException {
         List<String> commands = new ArrayList<String>();
 
         // calculate the necessary attack (turret rotate, fire)
         // return the Strings needed to issue the commands
 
-        String rotate_command = command.rotateTurret(tankID, "CCW", 1, gameInfo.getClientToken());
+        update_enemy();
+
+        String rotate_command = command.rotateTurret(tankID, "CW", find_closest_enemy(), gameInfo.getClientToken());
         commands.add(rotate_command);
 
-        String fire_command = command.fire(tankID, gameInfo.getClientToken());
-        commands.add(fire_command);
+        if (find_closest_enemy() == 0) {
+            String fire_command = command.fire(tankID, gameInfo.getClientToken());
+            commands.add(fire_command);
+        }
 
         return commands;
     }
