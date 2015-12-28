@@ -205,6 +205,7 @@ public class Tank {
                         my_coords.y = my_tank_coordinate.getInt(1);
 
                         for (Vector e : enemy_tank_coordinates) {
+                            System.out.println(e.x);
                             double distance = distance(e, my_coords);
                             if (distance < closest_distance) {
                                 closest_distance = distance;
