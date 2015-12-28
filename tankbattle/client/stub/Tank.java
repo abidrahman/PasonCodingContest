@@ -225,7 +225,7 @@ public class Tank {
         //Nothing changes.
 
         //Top-Left QUAD & Bottom-left QUAD
-        if (angle_needed < 0 && Oy > 0 || angle_needed > 0 && Oy <= 0) angle_needed = Math.PI + angle_needed;
+        if ((angle_needed < 0 && Oy > 0) || (angle_needed > 0 && Oy <= 0)) angle_needed = Math.PI + angle_needed;
 
         //Bottom-Right QUAD
         if (angle_needed < 0 && Oy < 0) angle_needed = 2*Math.PI + angle_needed;
@@ -244,15 +244,15 @@ public class Tank {
         // return the Strings needed to issue the commands
 
         double closest_enemy = find_closest_enemy();
-                        
-        if (closest_enemy <= 0.08 || closest_enemy >= 2*Math.PI) {
+        
+        if ((closest_enemy <= 0.08 || closest_enemy >= 2*Math.PI) && closest_distance <= 100) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
         } else if (closest_enemy < Math.PI && closest_enemy > 0.08) {
-            String rotate_command = command.rotateTurret(tankID, "CW", closest_enemy, gameInfo.getClientToken());
+            String rotate_command = command.rotateTurret(tankID, CW, closest_enemy, gameInfo.getClientToken());
             commands.add(rotate_command);
         } else if (closest_enemy >= Math.PI && closest_enemy < 2*Math.PI) {
-            String rotate_command = command.rotateTurret(tankID, "CCW", 2*Math.PI - closest_enemy, gameInfo.getClientToken());
+            String rotate_command = command.rotateTurret(tankID, CCW, 2*Math.PI - closest_enemy, gameInfo.getClientToken());
             commands.add(rotate_command);
         }
                     
