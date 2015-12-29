@@ -57,6 +57,7 @@ public class Tank {
         this.gameState = gameState;
         this.updateProjectiles();
         this.update_enemy();
+        this.update_tanks();
         JSONArray players = gameState.getJSONArray("players");
         for (int i = 0; i < players.length(); i++) {
             if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
@@ -161,6 +162,30 @@ public class Tank {
 
         return commands;
     }
+
+    ArrayList<Vector> my_tank_coordinates = new ArrayList<>();
+
+    private void update_tanks() throws JSONException {
+
+        this.my_tank_coordinates.clear();
+
+        if (gameState.has("players")) {
+            JSONArray players = gameState.getJSONArray("players");
+            for (int i = 0; i < players.length(); i++) {
+
+                if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
+                    JSONArray enemy_tanks = players.getJSONObject(i).getJSONArray("tanks");
+                    for (int j = 0; j < enemy_tanks.length(); j++) {
+                        Vector coords = new Vector();
+                        JSONArray tank_coordinate = enemy_tanks.getJSONObject(j).getJSONArray("position");
+                        coords.x = tank_coordinate.getInt(0);
+                        coords.y = tank_coordinate.getInt(1);
+                        this.my_tank_coordinates.add(coords);
+                    }
+                }
+            }
+        }
+    }
     
     ArrayList<Vector> enemy_tank_coordinates = new ArrayList<>();
 
@@ -205,8 +230,6 @@ public class Tank {
 
             }
         }
-        System.out.println(enemy.x);
-        System.out.println(enemy.y);
 
         //Calculate closest enemy's position relative to ours.
         double Ox = enemy.x - this_tank.position.x;
@@ -215,11 +238,11 @@ public class Tank {
         double angle_needed = Math.atan(Oy/Ox);
         double current_angle = this_tank.turret;
 
-        double angle_difference = 0;
+        double angle_difference;
 
         //Calculate angle difference depending on quadrant enemy is in.
         //angle_difference is the angle (in rad) between the current turret angle and needed turret angle
-        //counting CLOCKWWISE FROM turret angle TO needed turret angle.
+        //counting CLOCKWISE FROM turret angle TO needed turret angle.
 
         //Top-Right QUAD
         //Nothing changes.
@@ -237,15 +260,42 @@ public class Tank {
         return angle_difference;
     }
 
+    boolean friendly_in_the_way;
+
+    private boolean friendly_in_the_way(double closest_enemy_angle) {
+
+        //Calculate if there is a friendly in the way before the enemy, if so don't shoot.
+        for (Vector m : my_tank_coordinates) {
+
+            double Mx = m.x - this_tank.position.x;
+            double My = m.y - this_tank.position.y;
+            double avoid_angle = Math.atan(My/Mx);
+            friendly_in_the_way = false;
+
+            //Top-Left QUAD & Bottom-left QUAD
+            if ((avoid_angle < 0 && My > 0) || (avoid_angle > 0 && My <= 0)) avoid_angle = Math.PI + avoid_angle;
+            //Bottom-Right QUAD
+            if (avoid_angle < 0 && My < 0) avoid_angle = 2*Math.PI + avoid_angle;
+
+            if ((avoid_angle < (closest_enemy_angle + 0.08) && avoid_angle > (closest_enemy_angle - 0.08)) && (closest_distance > distance(this_tank.position,m))) {
+                friendly_in_the_way = true;
+                break;
+            }
+        }
+        return friendly_in_the_way;
+    }
+
     public List<String> attack() throws JSONException {
         List<String> commands = new ArrayList<String>();
 
         // calculate the necessary attack (turret rotate, fire)
         // return the Strings needed to issue the commands
 
+        //This is the difference between current angle and needed angle going CW
         double closest_enemy = find_closest_enemy();
-        
-        if ((closest_enemy <= 0.08 || closest_enemy >= 2*Math.PI) && closest_distance <= 100) {
+
+        //Only shoot if aiming at target && within range && friendly NOT in the way
+        if ((closest_enemy <= 0.08 || closest_enemy >= 2*Math.PI) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
         } else if (closest_enemy < Math.PI && closest_enemy > 0.08) {
