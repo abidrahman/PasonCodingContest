@@ -54,6 +54,7 @@ public class Tank {
     }
 
     public void update(JSONObject gameState) throws JSONException {
+
         this.gameState = gameState;
         this.updateProjectiles();
         this.update_enemy();
