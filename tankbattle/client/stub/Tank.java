@@ -277,7 +277,7 @@ public class Tank {
             //Bottom-Right QUAD
             if (avoid_angle < 0 && My < 0) avoid_angle = 2*Math.PI + avoid_angle;
 
-            if ((avoid_angle < (closest_enemy_angle + 0.08) && avoid_angle > (closest_enemy_angle - 0.08)) && (closest_distance > distance(this_tank.position,m))) {
+            if ((avoid_angle < (closest_enemy_angle + 0.1) && avoid_angle > (closest_enemy_angle - 0.1)) && (closest_distance > distance(this_tank.position,m))) {
                 friendly_in_the_way = true;
                 break;
             }
@@ -295,10 +295,10 @@ public class Tank {
         double closest_enemy = find_closest_enemy();
 
         //Only shoot if aiming at target && within range && friendly NOT in the way
-        if ((closest_enemy <= 0.08 || closest_enemy >= 2*Math.PI) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
+        if ((closest_enemy <= 0.05 || closest_enemy >= 2*Math.PI) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
-        } else if (closest_enemy < Math.PI && closest_enemy > 0.08) {
+        } else if (closest_enemy < Math.PI && closest_enemy > 0.05) {
             String rotate_command = command.rotateTurret(tankID, CW, closest_enemy, gameInfo.getClientToken());
             commands.add(rotate_command);
         } else if (closest_enemy >= Math.PI && closest_enemy < 2*Math.PI) {
