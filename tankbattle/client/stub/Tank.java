@@ -15,14 +15,11 @@ public class Tank {
     private Command command = new Command();
     private GameInfo gameInfo;
 
-    ArrayList<Vector> my_tank_coordinates = new ArrayList<>();
-    ArrayList<Vector> enemy_tank_coordinates = new ArrayList<>();
-    private Vector enemy = new Vector();
-    private double closest_distance;
-
     private static final String CW = "CW";
     private static final String CCW = "CCW";
 
+    Vector position = new Vector();
+    double direction;
 
     class Vector {
         double x;
@@ -86,10 +83,6 @@ public class Tank {
 
     private double dotProduct(Vector v1, Vector v2) {
         return (v1.x * v2.x) + (v1.y * v2.y);
-    }
-
-    private boolean doesCollide(Vector start1, Vector end1, Vector start2, Vector end2) {
-        return true;
     }
 
 
@@ -171,6 +164,8 @@ public class Tank {
         return commands;
     }
 
+    ArrayList<Vector> my_tank_coordinates = new ArrayList<>();
+
     private void update_tanks() throws JSONException {
 
         this.my_tank_coordinates.clear();
@@ -192,6 +187,8 @@ public class Tank {
             }
         }
     }
+
+    ArrayList<Vector> enemy_tank_coordinates = new ArrayList<>();
 
     private void update_enemy() throws JSONException {
 
@@ -215,10 +212,12 @@ public class Tank {
         }
     }
 
+    private Vector enemy = new Vector();
+    private double closest_distance;
+    private double distance;
 
     private double find_closest_enemy() throws JSONException {
 
-        double distance;
         closest_distance = 1280;
         enemy.x = 0;
         enemy.y = 0;
@@ -262,6 +261,7 @@ public class Tank {
         return angle_difference;
     }
 
+    boolean friendly_in_the_way;
 
     private boolean friendly_in_the_way(double closest_enemy_angle) {
 
@@ -271,6 +271,7 @@ public class Tank {
             double Mx = m.x - this_tank.position.x;
             double My = m.y - this_tank.position.y;
             double avoid_angle = Math.atan(My/Mx);
+            friendly_in_the_way = false;
 
             //Top-Left QUAD & Bottom-left QUAD
             if ((avoid_angle < 0 && My > 0) || (avoid_angle > 0 && My <= 0)) avoid_angle = Math.PI + avoid_angle;
@@ -278,10 +279,11 @@ public class Tank {
             if (avoid_angle < 0 && My < 0) avoid_angle = 2*Math.PI + avoid_angle;
 
             if ((avoid_angle < (closest_enemy_angle + 0.1) && avoid_angle > (closest_enemy_angle - 0.1)) && (closest_distance > distance(this_tank.position,m))) {
-                return true;
+                friendly_in_the_way = true;
+                break;
             }
         }
-        return false;
+        return friendly_in_the_way;
     }
 
     public List<String> attack() throws JSONException {
