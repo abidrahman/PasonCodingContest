@@ -116,6 +116,7 @@ final class Client
 						}
 					}
 				}
+				System.out.println(gameState.toString(4));
 
 				if (tankList.size() > 0) // if we successfully added the tanks
 					state = State.GAME_PLAY;
