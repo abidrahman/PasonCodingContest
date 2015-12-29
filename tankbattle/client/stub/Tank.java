@@ -18,8 +18,12 @@ public class Tank {
     private static final String CW = "CW";
     private static final String CCW = "CCW";
 
-    Vector position = new Vector();
-    double direction;
+    private Vector enemy = new Vector();
+    private double closest_distance;
+    ArrayList<Vector> my_tank_coordinates = new ArrayList<>();
+    ArrayList<Vector> enemy_tank_coordinates = new ArrayList<>();
+    private List<Projectile> projectiles = new ArrayList<Projectile>();
+    public TankData this_tank = new TankData();
 
     class Vector {
         double x;
@@ -40,9 +44,6 @@ public class Tank {
         double turret;
         // add more
     }
-
-    private List<Projectile> projectiles = new ArrayList<Projectile>();
-    public TankData this_tank = new TankData();
 
     public Tank(String tankID, GameInfo gameInfo) {
         this.tankID = tankID;
@@ -84,7 +85,6 @@ public class Tank {
     private double dotProduct(Vector v1, Vector v2) {
         return (v1.x * v2.x) + (v1.y * v2.y);
     }
-
 
     private void updateProjectiles() throws JSONException {
 
@@ -164,8 +164,6 @@ public class Tank {
         return commands;
     }
 
-    ArrayList<Vector> my_tank_coordinates = new ArrayList<>();
-
     private void update_tanks() throws JSONException {
 
         this.my_tank_coordinates.clear();
@@ -187,8 +185,6 @@ public class Tank {
             }
         }
     }
-
-    ArrayList<Vector> enemy_tank_coordinates = new ArrayList<>();
 
     private void update_enemy() throws JSONException {
 
@@ -212,12 +208,9 @@ public class Tank {
         }
     }
 
-    private Vector enemy = new Vector();
-    private double closest_distance;
-    private double distance;
-
     private double find_closest_enemy() throws JSONException {
 
+        double distance;
         closest_distance = 1280;
         enemy.x = 0;
         enemy.y = 0;
@@ -261,8 +254,6 @@ public class Tank {
         return angle_difference;
     }
 
-    boolean friendly_in_the_way;
-
     private boolean friendly_in_the_way(double closest_enemy_angle) {
 
         //Calculate if there is a friendly in the way before the enemy, if so don't shoot.
@@ -271,7 +262,6 @@ public class Tank {
             double Mx = m.x - this_tank.position.x;
             double My = m.y - this_tank.position.y;
             double avoid_angle = Math.atan(My/Mx);
-            friendly_in_the_way = false;
 
             //Top-Left QUAD & Bottom-left QUAD
             if ((avoid_angle < 0 && My > 0) || (avoid_angle > 0 && My <= 0)) avoid_angle = Math.PI + avoid_angle;
@@ -279,11 +269,10 @@ public class Tank {
             if (avoid_angle < 0 && My < 0) avoid_angle = 2*Math.PI + avoid_angle;
 
             if ((avoid_angle < (closest_enemy_angle + 0.1) && avoid_angle > (closest_enemy_angle - 0.1)) && (closest_distance > distance(this_tank.position,m))) {
-                friendly_in_the_way = true;
-                break;
+                return true;
             }
         }
-        return friendly_in_the_way;
+        return false;
     }
 
     public List<String> attack() throws JSONException {
