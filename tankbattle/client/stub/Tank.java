@@ -227,9 +227,9 @@ public class Tank {
                     obs_end.x = obs_start.x + (double)obstacle.getJSONArray("size").getInt(0);
                     obs_end.y = obs_start.y + (double)obstacle.getJSONArray("size").getInt(1);
 
-                    return (Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_start.x,obs_start.y,obs_end.x,obs_end.y));
-
-
+                    if (Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_start.x,obs_start.y,obs_end.x,obs_end.y)) {
+                        return true;
+                    }
                 }
             }
         }
