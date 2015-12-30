@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.lang.Math;
@@ -208,6 +209,34 @@ public class Tank {
         }
     }
 
+    private boolean doesCollide(Vector start, Vector end) throws JSONException {
+        //Returns true if projectile collides with an obstacle before the target
+
+        if (gameState.has("map")) {
+            JSONArray map = gameState.getJSONArray("map");
+            JSONArray terrains = map.getJSONObject(0).getJSONArray("terrain");
+            for (int i = 0; i < terrains.length(); i++) {
+
+                if (terrains.getJSONObject(i).getString("type").equals("SOLID")) {
+
+                    JSONObject obstacle = terrains.getJSONObject(i);
+                    Vector obs_start = new Vector();
+                    Vector obs_end = new Vector();
+                    obs_start.x = obstacle.getJSONArray("corner").getDouble(0);
+                    obs_start.y = obstacle.getJSONArray("corner").getDouble(1);
+                    obs_end.x = obs_start.x + obstacle.getJSONArray("size").getDouble(0);
+                    obs_end.y = obs_start.y + obstacle.getJSONArray("size").getDouble(1);
+
+                    return (Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_start.x,obs_start.y,obs_end.x,obs_end.y));
+
+
+                }
+            }
+        }
+        //If no collision return false
+        return false;
+    }
+
     private double find_closest_enemy() throws JSONException {
 
         double distance;
@@ -217,7 +246,7 @@ public class Tank {
 
         for (Vector e : enemy_tank_coordinates) {
             distance = distance(e, this_tank.position);
-            if (distance < closest_distance) {
+            if ((distance < closest_distance) && !doesCollide(this_tank.position,e)) {
                 closest_distance = distance;
                 enemy.x = e.x;
                 enemy.y = e.y;
