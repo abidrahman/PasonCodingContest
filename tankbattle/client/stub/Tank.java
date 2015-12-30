@@ -213,8 +213,8 @@ public class Tank {
         //Returns true if projectile collides with an obstacle before the target
 
         if (gameState.has("map")) {
-            JSONArray map = gameState.getJSONArray("map");
-            JSONArray terrains = map.getJSONObject(0).getJSONArray("terrain");
+            JSONObject map = gameState.getJSONObject("map");
+            JSONArray terrains = map.getJSONArray("terrain");
             for (int i = 0; i < terrains.length(); i++) {
 
                 if (terrains.getJSONObject(i).getString("type").equals("SOLID")) {
@@ -222,10 +222,10 @@ public class Tank {
                     JSONObject obstacle = terrains.getJSONObject(i);
                     Vector obs_start = new Vector();
                     Vector obs_end = new Vector();
-                    obs_start.x = obstacle.getJSONArray("corner").getDouble(0);
-                    obs_start.y = obstacle.getJSONArray("corner").getDouble(1);
-                    obs_end.x = obs_start.x + obstacle.getJSONArray("size").getDouble(0);
-                    obs_end.y = obs_start.y + obstacle.getJSONArray("size").getDouble(1);
+                    obs_start.x = (double)obstacle.getJSONArray("corner").getInt(0);
+                    obs_start.y = (double)obstacle.getJSONArray("corner").getInt(1);
+                    obs_end.x = obs_start.x + (double)obstacle.getJSONArray("size").getInt(0);
+                    obs_end.y = obs_start.y + (double)obstacle.getJSONArray("size").getInt(1);
 
                     return (Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_start.x,obs_start.y,obs_end.x,obs_end.y));
 
