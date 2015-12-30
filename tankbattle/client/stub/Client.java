@@ -84,8 +84,10 @@ final class Client
 
 		JSONObject gameState; // Blocking wait for game state example
 
-		long time = System.currentTimeMillis();
 		State state = State.MATCH_BEGIN;
+
+		Pathfinder pathfinder = Pathfinder.getInstance();
+
 		while (true)
 		{
 			System.out.println(state);
@@ -117,8 +119,11 @@ final class Client
 					}
 				}
 
-				if (tankList.size() > 0) // if we successfully added the tanks
+				if (tankList.size() > 0) { // if we successfully added the tanks
 					state = State.GAME_PLAY;
+					// load the map
+					pathfinder.updateMap(gameState.getJSONObject("map"));
+				}
 			}
 
 			if (state == State.GAME_PLAY) {

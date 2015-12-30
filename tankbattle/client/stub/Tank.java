@@ -26,7 +26,7 @@ public class Tank {
     private List<Projectile> projectiles = new ArrayList<Projectile>();
     public TankData this_tank = new TankData();
 
-    class Vector {
+    public static class Vector {
         double x;
         double y;
     }
