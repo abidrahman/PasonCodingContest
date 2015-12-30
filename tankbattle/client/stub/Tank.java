@@ -26,7 +26,7 @@ public class Tank {
     private List<Projectile> projectiles = new ArrayList<Projectile>();
     public TankData this_tank = new TankData();
 
-    class Vector {
+    public static class Vector {
         double x;
         double y;
     }
@@ -230,7 +230,6 @@ public class Tank {
                     if (Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_start.x,obs_start.y,obs_end.x,obs_end.y)) {
                         return true;
                     }
-
                 }
             }
         }
@@ -251,6 +250,7 @@ public class Tank {
                 closest_distance = distance;
                 enemy.x = e.x;
                 enemy.y = e.y;
+
             }
         }
 
