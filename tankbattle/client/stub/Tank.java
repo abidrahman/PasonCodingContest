@@ -286,7 +286,8 @@ public class Tank {
         //Calculate closest enemy's position relative to ours.
         double Ox = enemy.x - this_tank.position.x;
         double Oy = enemy.y - this_tank.position.y;
-
+        
+        if (Ox == 0.0) Ox = 0.00001;
         double angle_needed = Math.atan(Oy/Ox);
         double current_angle = this_tank.turret;
 
@@ -300,7 +301,7 @@ public class Tank {
         //Nothing changes.
 
         //Top-Left QUAD & Bottom-left QUAD
-        if ((angle_needed < 0 && Oy > 0) || (angle_needed > 0 && Oy <= 0)) angle_needed = Math.PI + angle_needed;
+        if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0)) angle_needed = Math.PI + angle_needed;
 
         //Bottom-Right QUAD
         if (angle_needed < 0 && Oy < 0) angle_needed = 2*Math.PI + angle_needed;
