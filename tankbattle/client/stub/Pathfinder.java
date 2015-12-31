@@ -81,24 +81,24 @@ public class Pathfinder {
         // set impassable terrain in our map
         int impassable_count = 0;
 
-        JSONArray terrain_objects = map.getJSONArray("terrain");
-        for (int i = 0; i < terrain_objects.length(); i++) {
-            JSONObject terrain = terrain_objects.getJSONObject(i);
-            if (terrain.getString("type").equals("SOLID") || terrain.getString("type").equals("IMPASSABLE")) {
-                JSONObject bounds = terrain.getJSONObject("boundingBox");
-                int corner_x = bounds.getJSONArray("corner").getInt(0);
-                int corner_y = bounds.getJSONArray("corner").getInt(1);
-                int width = bounds.getJSONArray("size").getInt(0);
-                int height = bounds.getJSONArray("size").getInt(1);
-                for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < width; x++) {
-                        Node n = this.map.getNode(corner_x + x, corner_y + y);
-                        n.impassable = true;
-                        ++impassable_count;
-                    }
-                }
-            }
-        }
+//        JSONArray terrain_objects = map.getJSONArray("terrain");
+//        for (int i = 0; i < terrain_objects.length(); i++) {
+//            JSONObject terrain = terrain_objects.getJSONObject(i);
+//            if (terrain.getString("type").equals("SOLID") || terrain.getString("type").equals("IMPASSABLE")) {
+//                JSONObject bounds = terrain.getJSONObject("boundingBox");
+//                int corner_x = bounds.getJSONArray("corner").getInt(0);
+//                int corner_y = bounds.getJSONArray("corner").getInt(1);
+//                int width = bounds.getJSONArray("size").getInt(0);
+//                int height = bounds.getJSONArray("size").getInt(1);
+//                for (int y = 0; y < height; y++) {
+//                    for (int x = 0; x < width; x++) {
+//                        Node n = this.map.getNode(corner_x + x, corner_y + y);
+//                        n.impassable = true;
+//                        ++impassable_count;
+//                    }
+//                }
+//            }
+//        }
 
         System.out.println(impassable_count);
 
