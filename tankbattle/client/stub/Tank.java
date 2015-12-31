@@ -27,6 +27,8 @@ public class Tank {
     private List<Projectile> projectiles = new ArrayList<Projectile>();
     public TankData this_tank = new TankData();
 
+    int count;
+
     private enum State {
         DOGFIGHT, HUNTING
     }
@@ -110,8 +112,11 @@ public class Tank {
             commands.addAll(dodgeProjectiles());
             commands.addAll(attack());
         }
+
+
         if (state == State.HUNTING) {
-            commands.addAll(huntEnemy());
+            count++;
+            if (count % 10000 == 1) commands.addAll(huntEnemy());
         }
 
         return commands;
@@ -246,7 +251,7 @@ public class Tank {
             System.out.println(rotate_tracks_command);
             commands.add(rotate_tracks_command);
 
-            String moveCommand = command.move(tankID, "FWD", 2, gameInfo.getClientToken());
+            String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
             commands.add(moveCommand);
         }
 
