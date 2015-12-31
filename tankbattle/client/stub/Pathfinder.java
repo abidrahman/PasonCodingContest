@@ -34,7 +34,7 @@ public class Pathfinder {
         Tank.Vector position = new Tank.Vector();
         double cost;
         Node parent;
-        boolean impassable;
+        boolean impassable = false;
 
         @Override
         public boolean equals(Object obj) {
@@ -167,6 +167,7 @@ public class Pathfinder {
             ArrayList<Node> neighbours = findNeighbours(current);
             System.out.println("num of neighbours: " + neighbours.size());
             for (Node neighbour : neighbours) {
+                System.out.println("impassable");
                 if (neighbour.impassable) continue;
                 double cost = current.cost + distance(current, neighbour);
                 if (open.contains(neighbour) && cost < neighbour.cost) {
