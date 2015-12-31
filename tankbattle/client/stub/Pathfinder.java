@@ -72,7 +72,7 @@ public class Pathfinder {
         // set the position data for all the nodes
         for (int y = 0; y < map_height; y++) {
             for (int x = 0; x < map_width; x++) {
-                Node n = this.map.getNode(map_width, map_height);
+                Node n = this.map.getNode(x, y);
                 n.position.x = x;
                 n.position.y = y;
             }
