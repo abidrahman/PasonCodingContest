@@ -27,6 +27,12 @@ public class Tank {
     private List<Projectile> projectiles = new ArrayList<Projectile>();
     public TankData this_tank = new TankData();
 
+    private enum State {
+        DOGFIGHT, HUNTING
+    }
+
+    private State state = State.DOGFIGHT;
+
     public static class Vector {
         double x;
         double y;
@@ -50,6 +56,7 @@ public class Tank {
     public Tank(String tankID, GameInfo gameInfo) {
         this.tankID = tankID;
         this.gameInfo = gameInfo;
+
     }
 
     public void printID() {
@@ -78,6 +85,36 @@ public class Tank {
                 }
             }
         }
+    }
+
+    public ArrayList<String> strategy() throws JSONException {
+        ArrayList<String> commands = new ArrayList<>();
+
+        double distance = 0;
+        double closest_d = 1000;
+        Vector closest = new Vector();
+        for (Vector e : enemy_tank_coordinates) {
+            distance = distance(e, this_tank.position);
+            if ((distance < closest_d) && !doesCollide(this_tank.position, e)) {
+                closest_d = distance;
+                closest.x = e.x;
+                closest.y = e.y;
+
+            }
+        }
+
+        if (closest.x != 0 && closest.y != 0) state = State.DOGFIGHT;
+        else state = State.HUNTING;
+
+        if (state == State.DOGFIGHT) {
+            commands.addAll(dodgeProjectiles());
+            commands.addAll(attack());
+        }
+        else if (state == State.HUNTING) {
+            commands.addAll(huntEnemy());
+        }
+
+        return commands;
     }
 
     private double distance(Vector v1, Vector v2) {
@@ -117,16 +154,11 @@ public class Tank {
         }
     }
 
-    public List<String> movement() {
-        List<String> commands = new ArrayList<String>();
-
-        // calculate the necessary movement
-        // return the Strings needed to issue the commands
-
+    private ArrayList<String> dodgeProjectiles() {
+        ArrayList<String> commands = new ArrayList<String>();
 
         // check if any projectiles are headed towards this tank
 
-        /*
         for (Projectile p : projectiles) {
 
             if (distance(this_tank.position, p.position) > p.range) continue;
@@ -163,11 +195,32 @@ public class Tank {
             }
 
         }
-        */
 
+        return commands;
+    }
+
+    private ArrayList<String> huntEnemy() {
         // Move towards the closest enemy.
+        ArrayList<String> commands = new ArrayList<String>();
 
-        ArrayList<Vector> path = test_PathFind();
+        double distance = 0;
+        double closest_d = 1000;
+        Vector closest = new Vector();
+        for (Vector e : enemy_tank_coordinates) {
+            distance = distance(e, this_tank.position);
+            if (distance < closest_d) {
+                closest_d = distance;
+                closest.x = e.x;
+                closest.y = e.y;
+
+            }
+        }
+
+        ArrayList<Vector> path = pathfinder.findPath(this_tank.position, closest);
+
+        for (Vector coord : path) {
+            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
+        }
 
         if (path.size() > 3) {
 
@@ -288,31 +341,6 @@ public class Tank {
         return false;
     }
 
-    private ArrayList<Vector> test_PathFind() {
-        double distance = 0;
-        double closest_d = 1000;
-        Vector closest = new Vector();
-        for (Vector e : enemy_tank_coordinates) {
-            distance = distance(e, this_tank.position);
-            if (distance < closest_d) {
-                closest_d = distance;
-                closest.x = e.x;
-                closest.y = e.y;
-
-            }
-        }
-
-        System.out.println("enemy position: x: " + closest.x + ", y:" + closest.y);
-
-        ArrayList<Vector> path = pathfinder.findPath(this_tank.position, closest);
-
-        for (Vector coord : path) {
-            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
-        }
-        
-        return path;
-    }
-
     private double find_closest_enemy() throws JSONException {
 
         double distance;
@@ -381,8 +409,8 @@ public class Tank {
         return false;
     }
 
-    public List<String> attack() throws JSONException {
-        List<String> commands = new ArrayList<String>();
+    public ArrayList<String> attack() throws JSONException {
+        ArrayList<String> commands = new ArrayList<String>();
 
         // calculate the necessary attack (turret rotate, fire)
         // return the Strings needed to issue the commands
