@@ -267,7 +267,6 @@ public class Pathfinder {
             path.add(last.position);
             last = last.parent;
         }
-
         return path;
     }
 

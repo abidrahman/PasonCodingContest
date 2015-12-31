@@ -199,7 +199,7 @@ public class Tank {
         return commands;
     }
 
-    private ArrayList<String> huntEnemy() {
+    private ArrayList<String> huntEnemy() throws JSONException {
         // Move towards the closest enemy.
         ArrayList<String> commands = new ArrayList<String>();
 
@@ -224,30 +224,7 @@ public class Tank {
 
         if (path.size() > 3) {
 
-            //Calculate next coordinate position relative to ours.
-            double Ox = path.get(path.size() - 2).x - this_tank.position.x;
-            double Oy = path.get(path.size() - 2).y - this_tank.position.y;
-
-            if (Ox == 0.0) Ox = 0.00001;
-            double angle_needed = Math.atan(Oy/Ox);
-            double current_angle = this_tank.direction;
-
-            double angle_difference;
-
-            //Calculate angle difference depending on quadrant the next path is.
-
-            //Top-Right QUAD
-            //Nothing changes.
-
-            //Top Left and Bottom-left QUAD
-            if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0 && Ox < 0)) angle_needed = Math.PI + angle_needed;
-
-            //Bottom-Right QUAD
-            if (angle_needed < 0 && Oy < 0) angle_needed = 2*Math.PI + angle_needed;
-
-
-            if (current_angle > angle_needed) angle_difference = current_angle - angle_needed;
-            else angle_difference = 2*Math.PI - (angle_needed - current_angle);
+            double angle_difference = find_closest_enemy();
 
             //ROTATE THE WHEELS
             if (angle_difference < Math.PI && angle_difference > 0.05) {
