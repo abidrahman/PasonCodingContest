@@ -195,22 +195,21 @@ public class Pathfinder {
 //            System.out.println("num of neighbours: " + neighbours.size());
             for (int i = 0; i < neighbours.size(); i++) {
                 Node neighbour = neighbours.get(i);
-
                 if (neighbour.impassable) {
 //                    System.out.println("impassable");
                     continue;
                 }
                 double cost = current.cost + distance(current, neighbour);
                 if (open.contains(neighbour) && cost < neighbour.cost) {
-//                    System.out.println("1");
+                    System.out.println("1");
                     open.remove(neighbour);
                 }
                 else if (closed.contains(neighbour) && cost < neighbour.cost) {
                     closed.remove(neighbour);
-//                    System.out.println("2");
+                    System.out.println("2");
                 }
                 else {
-//                    System.out.println("3");
+                    System.out.println("3");
                     neighbour.cost = cost;
                     neighbour.parent = current;
                     open.add(neighbour);
