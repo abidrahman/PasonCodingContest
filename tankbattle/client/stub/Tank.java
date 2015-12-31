@@ -256,6 +256,8 @@ public class Tank {
             }
         }
 
+        System.out.println("enemy position: x: " + enemy.x + ", y:" + enemy.y);
+
         Pathfinder pathfinder = Pathfinder.getInstance();
 
         ArrayList<Vector> path = pathfinder.findPath(this_tank.position, enemy);
