@@ -103,7 +103,7 @@ public class Tank {
             }
         }
 
-        if (closest.x != 0 && closest.y != 0) state = State.DOGFIGHT;
+        if (closest.x > 0.1 && closest.y > 0.1) state = State.DOGFIGHT;
         else state = State.HUNTING;
 
         if (state == State.DOGFIGHT) {
