@@ -174,33 +174,33 @@ public class Pathfinder {
 
         int count = 0;
         while (!samePosition(open.peek(), this.end)) {
-//            System.out.println("loop iteration: " + count);
+            System.out.println("loop iteration: " + count);
             Node current = open.poll();
             closed.add(current);
             ArrayList<Node> neighbours = findNeighbours(current);
-//            System.out.println("num of neighbours: " + neighbours.size());
+            System.out.println("num of neighbours: " + neighbours.size());
             for (Node neighbour : neighbours) {
                 if (neighbour.impassable) {
-//                    System.out.println("impassable");
+                    System.out.println("impassable");
                     continue;
                 }
                 double cost = current.cost + distance(current, neighbour);
                 if (open.contains(neighbour) && cost < neighbour.cost) {
-//                    System.out.println("1");
+                    System.out.println("1");
                     open.remove(neighbour);
                 }
                 else if (closed.contains(neighbour) && cost < neighbour.cost) {
                     closed.remove(neighbour);
-//                    System.out.println("2");
+                    System.out.println("2");
                 }
                 else {
-//                    System.out.println("3");
+                    System.out.println("3");
                     neighbour.cost = cost;
                     neighbour.parent = current;
                     open.add(neighbour);
                 }
             }
-//            System.out.println("end of loop iteration: " + count);
+            System.out.println("end of loop iteration: " + count);
             ++count;
         }
 
@@ -209,7 +209,7 @@ public class Pathfinder {
         while (!samePosition(open.peek().parent, this.start)) {
             path.add(open.poll().parent.position);
         }
-        System.out.println("total loop iterations: " + count);
+
         return path;
     }
 
