@@ -36,14 +36,14 @@ public class Pathfinder {
         Node parent;
         boolean impassable;
 
-//        @Override
-//        public boolean equals(Object obj) {
-//            boolean same = false;
-//            if (obj != null && obj instanceof Node) {
-//                same = samePosition(this, (Node)obj);
-//            }
-//            return same;
-//        }
+        @Override
+        public boolean equals(Object obj) {
+            boolean same = false;
+            if (obj != null && obj instanceof Node) {
+                same = samePosition(this, (Node)obj) || this == obj;
+            }
+            return same;
+        }
     }
 
     public class GameMap {
@@ -156,7 +156,9 @@ public class Pathfinder {
 
         open.add(this.start);
 
+        int count = 0;
         while (!samePosition(open.peek(), this.end)) {
+            System.out.println("loop iteration: " + count);
             Node current = open.poll();
             closed.add(current);
             ArrayList<Node> neighbours = findNeighbours(current);
