@@ -192,7 +192,7 @@ public class Pathfinder {
         while (!samePosition(open.peek(), this.end)) {
 //            System.out.println("loop iteration: " + count);
 
-            if (count > 1000) break;
+            if (count > 15000) break;
 
             Node current = open.poll();
 //            System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
