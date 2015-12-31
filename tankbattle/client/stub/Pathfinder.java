@@ -92,7 +92,8 @@ public class Pathfinder {
                 int height = bounds.getJSONArray("size").getInt(1);
                 for (int y = 0; y < height; y++) {
                     for (int x = 0; x < width; x++) {
-//                        this.map.getNode(corner_x + x, corner_y + y).impassable = true;
+                        Node n = this.map.getNode(corner_x + x, corner_y + y);
+                        n.impassable = true;
                         ++impassable_count;
                     }
                 }
