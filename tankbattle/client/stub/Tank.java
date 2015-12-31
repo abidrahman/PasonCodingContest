@@ -256,6 +256,14 @@ public class Tank {
             }
         }
 
+        Pathfinder pathfinder = Pathfinder.getInstance();
+
+        ArrayList<Vector> path = pathfinder.findPath(this_tank.position, enemy);
+
+        for (Vector coord : path) {
+            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
+        }
+
         //Calculate closest enemy's position relative to ours.
         double Ox = enemy.x - this_tank.position.x;
         double Oy = enemy.y - this_tank.position.y;
