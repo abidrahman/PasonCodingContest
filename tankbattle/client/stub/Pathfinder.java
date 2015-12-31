@@ -200,6 +200,7 @@ public class Pathfinder {
                 }
             }
             System.out.println("end of loop iteration: " + count);
+            ++count;
         }
 
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
