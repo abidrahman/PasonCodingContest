@@ -93,24 +93,23 @@ public class Tank {
         double distance = 0;
         double closest_d = 1000;
         Vector closest = new Vector();
+        boolean found_enemy = false
         for (Vector e : enemy_tank_coordinates) {
             distance = distance(e, this_tank.position);
             if ((distance < closest_d) && !doesCollide(this_tank.position, e)) {
-                closest_d = distance;
-                closest.x = e.x;
-                closest.y = e.y;
-
+                found_enemy = true;
+                break;
             }
         }
 
-        if (closest.x > 0.1 && closest.y > 0.1) state = State.DOGFIGHT;
-
+        if (found_enemy) state = State.DOGFIGHT;
+        else state = State.HUNTING;
 
         if (state == State.DOGFIGHT) {
             commands.addAll(dodgeProjectiles());
             commands.addAll(attack());
         }
-        else if (state == State.HUNTING) {
+        if (state == State.HUNTING) {
             commands.addAll(huntEnemy());
         }
 
