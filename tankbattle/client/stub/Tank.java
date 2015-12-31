@@ -121,7 +121,7 @@ public class Tank {
                 String moveCommand = command.move(tankID, "FWD", 30, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
-            if (count % 30 == 1) commands.addAll(huntEnemy());
+            if (count % 50 == 1) commands.addAll(huntEnemy());
         }
 
         return commands;
