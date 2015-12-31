@@ -155,7 +155,8 @@ public class Pathfinder {
         this.start.position.y = end.y;
 
         open.add(this.start);
-
+        System.out.println("start position: x: " + start.x + ", y:" + start.y);
+        System.out.println("end position: x: " + end.x + ", y:" + end.y);
         System.out.println("size of queue: " + open.size());
 
         int count = 0;
@@ -164,6 +165,7 @@ public class Pathfinder {
             Node current = open.poll();
             closed.add(current);
             ArrayList<Node> neighbours = findNeighbours(current);
+            System.out.println("num of neighbours: " + neighbours.size());
             for (Node neighbour : neighbours) {
                 if (neighbour.impassable) continue;
                 double cost = current.cost + distance(current, neighbour);
@@ -179,6 +181,7 @@ public class Pathfinder {
                     open.add(neighbour);
                 }
             }
+
         }
 
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
