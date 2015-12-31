@@ -93,7 +93,7 @@ public class Tank {
         double distance = 0;
         double closest_d = 1000;
         Vector closest = new Vector();
-        boolean found_enemy = false
+        boolean found_enemy = false;
         for (Vector e : enemy_tank_coordinates) {
             distance = distance(e, this_tank.position);
             if ((distance < closest_d) && !doesCollide(this_tank.position, e)) {
