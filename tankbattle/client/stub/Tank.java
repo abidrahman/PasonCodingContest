@@ -162,6 +162,52 @@ public class Tank {
 
         }
 
+
+        // Move towards the closest enemy.
+        ArrayList<Vector> path = test_PathFind();
+
+        for (int i = path.size() - 2; i > 0; i--) {
+
+            //Calculate next coordinate position relative to ours.
+            double Ox = path.get(i).x - this_tank.position.x;
+            double Oy = path.get(i).y - this_tank.position.y;
+
+            if (Ox == 0.0) Ox = 0.00001;
+            double angle_needed = Math.atan(Oy/Ox);
+            double current_angle = this_tank.direction;
+
+            double angle_difference;
+
+            //Calculate angle difference depending on quadrant the next path is.
+
+            //Top-Right QUAD
+            //Nothing changes.
+
+            //Top-Left QUAD & Bottom-left QUAD
+            if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0)) angle_needed = Math.PI + angle_needed;
+
+            //Bottom-Right QUAD
+            if (angle_needed < 0 && Oy < 0) angle_needed = 2*Math.PI + angle_needed;
+
+
+            if (current_angle > angle_needed) angle_difference = current_angle - angle_needed;
+            else angle_difference = 2*Math.PI - (angle_needed - current_angle);
+
+            //ROTATE THE WHEELS
+            if (angle_difference < Math.PI && angle_difference > 0.05) {
+                String rotate_tracks_command = command.rotate(tankID, CW, angle_difference, gameInfo.getClientToken());
+                commands.add(rotate_tracks_command);
+            } else if (angle_difference >= Math.PI && angle_difference < 2*Math.PI) {
+                String rotate_tracks_command = command.rotate(tankID, CCW, 2*Math.PI - angle_difference, gameInfo.getClientToken());
+                commands.add(rotate_tracks_command);
+            }
+
+            //USE THE WHEELS
+            String moveCommand = command.move(tankID, "FWD", 2.5, gameInfo.getClientToken());
+            commands.add(moveCommand);
+
+        }
+
         return commands;
     }
 
@@ -239,8 +285,8 @@ public class Tank {
         return false;
     }
 
-    private void test_PathFind() {
-        double distance = 0;
+    private ArrayList<Vector> test_PathFind() {
+        double distance;
         double closest_d = 1000;
         Vector closest = new Vector();
         for (Vector e : enemy_tank_coordinates) {
@@ -249,7 +295,6 @@ public class Tank {
                 closest_d = distance;
                 closest.x = e.x;
                 closest.y = e.y;
-
             }
         }
 
@@ -262,6 +307,8 @@ public class Tank {
         for (Vector coord : path) {
             System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
         }
+
+        return path;
     }
 
     private double find_closest_enemy() throws JSONException {
@@ -281,12 +328,10 @@ public class Tank {
             }
         }
 
-        test_PathFind();
-
         //Calculate closest enemy's position relative to ours.
         double Ox = enemy.x - this_tank.position.x;
         double Oy = enemy.y - this_tank.position.y;
-        
+
         if (Ox == 0.0) Ox = 0.00001;
         double angle_needed = Math.atan(Oy/Ox);
         double current_angle = this_tank.turret;
