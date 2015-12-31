@@ -101,7 +101,7 @@ public class Pathfinder {
             }
         }
 
-        System.out.println(("count 1: " + impassable_count);
+        System.out.println("count 1: " + impassable_count);
 
         impassable_count = 0;
 
