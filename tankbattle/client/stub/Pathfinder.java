@@ -79,6 +79,8 @@ public class Pathfinder {
         }
 
         // set impassable terrain in our map
+        int impassable_count = 0;
+
         JSONArray terrain_objects = map.getJSONArray("terrain");
         for (int i = 0; i < terrain_objects.length(); i++) {
             JSONObject terrain = terrain_objects.getJSONObject(i);
@@ -91,16 +93,20 @@ public class Pathfinder {
                 for (int y = 0; y < height; y++) {
                     for (int x = 0; x < width; x++) {
                         this.map.getNode(corner_x + x, corner_y + y).impassable = true;
+                        ++impassable_count;
                     }
                 }
             }
         }
-        for (Node[] row : this.map.nodes) {
-            System.out.println();
-            for (Node n : row) {
-                System.out.print(n.impassable);
-            }
-        }
+
+        System.out.println(impassable_count);
+
+//        for (Node[] row : this.map.nodes) {
+//            System.out.println();
+//            for (Node n : row) {
+//                System.out.print(n.impassable);
+//            }
+//        }
     }
 
     private double distance(Node n1, Node n2) {
