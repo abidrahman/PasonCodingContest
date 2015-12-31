@@ -240,12 +240,13 @@ public class Tank {
     }
 
     private void test_PathFind() {
-        double distance;
+        double distance = 0;
+        double closest_d = 1000;
         Vector closest = new Vector();
         for (Vector e : enemy_tank_coordinates) {
             distance = distance(e, this_tank.position);
-            if (distance < closest_distance) {
-                closest_distance = distance;
+            if (distance < closest_d) {
+                closest_d = distance;
                 closest.x = e.x;
                 closest.y = e.y;
 
