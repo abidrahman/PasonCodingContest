@@ -250,6 +250,8 @@ public class Pathfinder {
             ++count;
         }
 
+        System.out.println("total loops: " + count);
+
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
 
         if (open.peek() == null) {
