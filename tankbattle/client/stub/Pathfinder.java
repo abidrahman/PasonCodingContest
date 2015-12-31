@@ -187,7 +187,7 @@ public class Pathfinder {
         int count = 0;
 
         while (!samePosition(open.peek(), this.end)) {
-//            System.out.println("loop iteration: " + count);
+            System.out.println("loop iteration: " + count);
             Node current = open.poll();
             if (count < 100) System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
             closed.add(current);
@@ -220,8 +220,11 @@ public class Pathfinder {
 
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
 
+        count = 0;
         while (!samePosition(open.peek().parent, this.start)) {
+            System.out.println("parent finding count: " + count);
             path.add(open.poll().parent.position);
+            ++count;
         }
 
         return path;
