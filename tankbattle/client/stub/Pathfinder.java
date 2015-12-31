@@ -193,7 +193,9 @@ public class Pathfinder {
             closed.add(current);
             ArrayList<Node> neighbours = findNeighbours(current);
 //            System.out.println("num of neighbours: " + neighbours.size());
-            for (Node neighbour : neighbours) {
+            for (int i = 0; i < neighbours.size(); i++) {
+                Node neighbour = neighbours.get(i);
+
                 if (neighbour.impassable) {
 //                    System.out.println("impassable");
                     continue;
@@ -214,6 +216,27 @@ public class Pathfinder {
                     open.add(neighbour);
                 }
             }
+//            for (Node neighbour : neighbours) {
+//                if (neighbour.impassable) {
+////                    System.out.println("impassable");
+//                    continue;
+//                }
+//                double cost = current.cost + distance(current, neighbour);
+//                if (open.contains(neighbour) && cost < neighbour.cost) {
+////                    System.out.println("1");
+//                    open.remove(neighbour);
+//                }
+//                else if (closed.contains(neighbour) && cost < neighbour.cost) {
+//                    closed.remove(neighbour);
+////                    System.out.println("2");
+//                }
+//                else {
+////                    System.out.println("3");
+//                    neighbour.cost = cost;
+//                    neighbour.parent = current;
+//                    open.add(neighbour);
+//                }
+//            }
 //            System.out.println("end of loop iteration: " + count);
             ++count;
         }
