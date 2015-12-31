@@ -224,8 +224,26 @@ public class Tank {
 
         if (path.size() > 3) {
             double x = path.get(path.size() - 2).x;
+            if (x == 0) x = 0.000000001;
             double y = path.get(path.size() - 2).y;
             System.out.println("My position: x : " + this_tank.position.x + ", y: " + this_tank.position.y + " Path: x:" + x + ", y:" + y);
+
+            double dir = this_tank.direction;
+            double needed_dir = Math.atan2(y, x);
+
+            double difference = dir - needed_dir;
+
+            String rotation;
+            if (difference > 0) rotation = CW;
+            else {
+                rotation = CCW;
+                difference = -difference;
+            }
+            String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
+            commands.add(rotate_tracks_command);
+
+            String moveCommand = command.move(tankID, "FWD", 2, gameInfo.getClientToken());
+            commands.add(moveCommand);
         }
 
         return commands;

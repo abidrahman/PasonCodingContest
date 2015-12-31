@@ -163,6 +163,7 @@ final class Client
 				while (iter.hasNext()) {
 					Tank tank = iter.next();
 
+
 					tank.update(gameState);
 					List<String> commands = new ArrayList<String>();
 					commands.addAll(tank.strategy());
