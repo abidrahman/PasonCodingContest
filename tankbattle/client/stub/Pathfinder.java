@@ -248,6 +248,7 @@ public class Pathfinder {
             System.out.println("parent finding count: " + count);
             if (open.peek().parent == null) break;
             path.add(open.poll().parent.position);
+            if (open.peek().parent == null) break;
             ++count;
         }
 
