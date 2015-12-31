@@ -81,7 +81,7 @@ public class Pathfinder {
         }
 
         // set impassable terrain in our map
-        int impassable_count = 0;
+//        int impassable_count = 0;
 
         JSONArray terrain_objects = map.getJSONArray("terrain");
         for (int i = 0; i < terrain_objects.length(); i++) {
@@ -97,28 +97,28 @@ public class Pathfinder {
                     for (int x = 0; x < width; x++) {
                         Node n = this.map.getNode(corner_x + x, corner_y + y);
                         n.impassable = true;
-                        ++impassable_count;
+//                        ++impassable_count;
                     }
                 }
             }
         }
 
-        System.out.println("count 1: " + impassable_count);
-
-        impassable_count = 0;
-
-        for (Node[] row : this.map.nodes) {
-            System.out.println();
-            for (Node n : row) {
-                if (n.impassable) {
-                    System.out.print(1);
-                    ++impassable_count;
-                }
-                else System.out.print(0);
-            }
-        }
-
-        System.out.println("count 2: " + impassable_count);
+//        System.out.println("count 1: " + impassable_count);
+//
+//        impassable_count = 0;
+//
+//        for (Node[] row : this.map.nodes) {
+//            System.out.println();
+//            for (Node n : row) {
+//                if (n.impassable) {
+//                    System.out.print(1);
+//                    ++impassable_count;
+//                }
+//                else System.out.print(0);
+//            }
+//        }
+//
+//        System.out.println("count 2: " + impassable_count);
     }
 
     private double distance(Node n1, Node n2) {
@@ -164,10 +164,11 @@ public class Pathfinder {
 
         open.clear();
         closed.clear();
-        for (Node[] row : map.nodes) {
-            for (Node n : row) {
-                n.cost = 0.0;
-                n.parent = null;
+
+        for (int row = 0; row < map.map_height; row++) {
+            for (int col = 0; col < map.map_width; col++) {
+                map.nodes[row][col].parent = null;
+                map.nodes[row][col].cost = 0;
             }
         }
 
@@ -187,6 +188,7 @@ public class Pathfinder {
         while (!samePosition(open.peek(), this.end)) {
 //            System.out.println("loop iteration: " + count);
             Node current = open.poll();
+            if (count < 100) System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
             closed.add(current);
             ArrayList<Node> neighbours = findNeighbours(current);
 //            System.out.println("num of neighbours: " + neighbours.size());
