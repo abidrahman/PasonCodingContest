@@ -191,6 +191,8 @@ public class Pathfinder {
         while (!samePosition(open.peek(), this.end)) {
 //            System.out.println("loop iteration: " + count);
 
+            if (count > 1000) break;
+
             Node current = open.poll();
 //            System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
             closed.add(current);
@@ -218,6 +220,7 @@ public class Pathfinder {
                     neighbour.parent = current;
                     open.add(neighbour);
                 }
+
             }
 //            for (Node neighbour : neighbours) {
 //                if (neighbour.impassable) {
