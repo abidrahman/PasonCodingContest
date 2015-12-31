@@ -260,7 +260,7 @@ public class Tank {
             }
             else if (difference <= -Math.PI && difference >= -2*Math.PI) {
                 rotation = CW;
-                difference = 2 * Math.PI * difference;
+                difference = 2 * Math.PI + difference;
             }
             else {
                 rotation = CW;
