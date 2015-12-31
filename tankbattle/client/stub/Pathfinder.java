@@ -170,12 +170,15 @@ public class Pathfinder {
                 if (neighbour.impassable) continue;
                 double cost = current.cost + distance(current, neighbour);
                 if (open.contains(neighbour) && cost < neighbour.cost) {
+                    System.out.println("1");
                     open.remove(neighbour);
                 }
                 else if (closed.contains(neighbour) && cost < neighbour.cost) {
                     closed.remove(neighbour);
+                    System.out.println("2");
                 }
                 else {
+                    System.out.println("3");
                     neighbour.cost = cost;
                     neighbour.parent = current;
                     open.add(neighbour);
