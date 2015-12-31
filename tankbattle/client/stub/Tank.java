@@ -103,6 +103,8 @@ public class Tank {
         }
 
         if (found_enemy) state = State.DOGFIGHT;
+        if (!found_enemy)
+            state = State.HUNTING;
 
         if (state == State.DOGFIGHT) {
             commands.addAll(dodgeProjectiles());
