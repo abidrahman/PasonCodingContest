@@ -189,7 +189,7 @@ public class Pathfinder {
         while (!samePosition(open.peek(), this.end)) {
             System.out.println("loop iteration: " + count);
             Node current = open.poll();
-            if (count < 100) System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
+            System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
             closed.add(current);
             ArrayList<Node> neighbours = findNeighbours(current);
 //            System.out.println("num of neighbours: " + neighbours.size());
