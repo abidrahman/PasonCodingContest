@@ -105,7 +105,9 @@ public class Pathfinder {
         for (Node[] row : this.map.nodes) {
             System.out.println();
             for (Node n : row) {
-                System.out.print(n.impassable);
+                if (n.impassable)
+                    System.out.print(1);
+                else System.out.println(0);
             }
         }
     }
