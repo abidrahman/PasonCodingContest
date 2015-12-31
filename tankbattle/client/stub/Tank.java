@@ -239,7 +239,9 @@ public class Tank {
                 rotation = CCW;
                 difference = -difference;
             }
+
             String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
+            System.out.println(rotate_tracks_command);
             commands.add(rotate_tracks_command);
 
             String moveCommand = command.move(tankID, "FWD", 2, gameInfo.getClientToken());
