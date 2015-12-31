@@ -141,7 +141,7 @@ public class Pathfinder {
     }
 
     private boolean samePosition(Node n1, Node n2) {
-        return ((n1.position.x == n2.position.x) && (n1.position.y == n2.position.y));
+        return ((Math.abs(n1.position.x - n2.position.x) < 0.1) && (Math.abs(n1.position.y - n2.position.y) < 0.1));
     }
 
     private ArrayList<Node> findNeighbours(Node n) {
@@ -176,8 +176,8 @@ public class Pathfinder {
         this.end = new Node();
         this.start.position.x = start.x;
         this.start.position.y = start.y;
-        this.start.position.x = end.x;
-        this.start.position.y = end.y;
+        this.end.position.x = end.x;
+        this.end.position.y = end.y;
 
         open.add(this.start);
         System.out.println("start position: x: " + start.x + ", y:" + start.y);
@@ -185,6 +185,7 @@ public class Pathfinder {
         System.out.println("size of queue: " + open.size());
 
         int count = 0;
+
         while (!samePosition(open.peek(), this.end)) {
 //            System.out.println("loop iteration: " + count);
             Node current = open.poll();
