@@ -204,7 +204,7 @@ public class Pathfinder {
                     System.out.println("1");
                     open.remove(neighbour);
                 }
-                else if (closed.contains(neighbour) && cost < neighbour.cost) {
+                else if (closed.contains(neighbour) && (neighbour.cost - cost > 1) ) {
                     closed.remove(neighbour);
                     System.out.println("2");
                 }
