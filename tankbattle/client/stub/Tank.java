@@ -167,7 +167,7 @@ public class Tank {
         // Move towards the closest enemy.
         ArrayList<Vector> path = test_PathFind();
 
-        if (true) {
+        if (path.size() > 3) {
 
             //Calculate next coordinate position relative to ours.
             double Ox = path.get(path.size() - 2).x - this_tank.position.x;
