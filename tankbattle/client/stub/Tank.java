@@ -281,7 +281,7 @@ public class Tank {
             }
         }
 
-        test_PathFind();
+//        test_PathFind();
 
         //Calculate closest enemy's position relative to ours.
         double Ox = enemy.x - this_tank.position.x;

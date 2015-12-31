@@ -54,8 +54,10 @@ public class Pathfinder {
             map_width = width;
             map_height = height;
             nodes = new Node[height][width];
-            for (Node[] row : nodes) {
-                Arrays.fill(row, new Node());
+            for (int row = 0; row < map_height; row++) {
+                for (int col = 0; col < map_width; col++) {
+                    nodes[row][col] = new Node();
+                }
             }
         }
         public Node getNode(int x, int y) {
