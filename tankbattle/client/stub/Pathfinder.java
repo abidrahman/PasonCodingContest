@@ -36,14 +36,14 @@ public class Pathfinder {
         Node parent;
         boolean impassable;
 
-        @Override
-        public boolean equals(Object obj) {
-            boolean same = false;
-            if (obj != null && obj instanceof Node) {
-                same = samePosition(this, (Node)obj);
-            }
-            return same;
-        }
+//        @Override
+//        public boolean equals(Object obj) {
+//            boolean same = false;
+//            if (obj != null && obj instanceof Node) {
+//                same = samePosition(this, (Node)obj);
+//            }
+//            return same;
+//        }
     }
 
     public class GameMap {
@@ -143,6 +143,7 @@ public class Pathfinder {
         for (Node[] row : map.nodes) {
             for (Node n : row) {
                 n.cost = 0.0;
+                n.parent = null;
             }
         }
 
