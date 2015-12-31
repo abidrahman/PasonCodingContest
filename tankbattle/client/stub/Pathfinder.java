@@ -156,6 +156,8 @@ public class Pathfinder {
 
         open.add(this.start);
 
+        System.out.println("size of queue: " + open.size());
+
         int count = 0;
         while (!samePosition(open.peek(), this.end)) {
             System.out.println("loop iteration: " + count);
