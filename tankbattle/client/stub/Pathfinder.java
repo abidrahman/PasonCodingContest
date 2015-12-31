@@ -155,6 +155,7 @@ public class Pathfinder {
                 int y_prime = y + j;
                 if (x_prime == x && y_prime == y) continue;
                 if (x_prime < 0 || !(x_prime < map.map_width) || y_prime < 0 || !(y_prime < map.map_height)) continue;
+                if (map.getNode(x_prime, y_prime).parent == n) continue;
                 neighbours.add(map.getNode(x_prime, y_prime));
             }
         }
