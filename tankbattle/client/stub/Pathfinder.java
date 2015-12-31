@@ -107,7 +107,7 @@ public class Pathfinder {
             for (Node n : row) {
                 if (n.impassable)
                     System.out.print(1);
-                else System.out.println(0);
+                else System.out.print(0);
             }
         }
     }
