@@ -184,7 +184,7 @@ public class Pathfinder {
                     open.add(neighbour);
                 }
             }
-
+            System.out.println("end of loop iteration: " + count);
         }
 
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
