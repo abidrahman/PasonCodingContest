@@ -204,11 +204,11 @@ public class Pathfinder {
 //                    System.out.println("1");
                     open.remove(neighbour);
                 }
-                else if (closed.contains(neighbour) && (neighbour.cost - cost > 1) ) {
+                if (closed.contains(neighbour) && (neighbour.cost - cost > 1) ) {
                     closed.remove(neighbour);
 //                    System.out.println("2");
                 }
-                else {
+                if (!open.contains(neighbour) && !closed.contains(neighbour)) {
 //                    System.out.println("3");
                     neighbour.cost = cost;
                     neighbour.parent = current;
