@@ -117,7 +117,7 @@ public class Tank {
         if (state == State.HUNTING) {
             count++;
             System.out.println(count);
-            if (count % 100 == 1) commands.addAll(huntEnemy());
+            if (count % 10 == 1) commands.addAll(huntEnemy());
         }
 
         return commands;
