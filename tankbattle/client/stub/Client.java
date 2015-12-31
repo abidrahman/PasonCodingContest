@@ -86,7 +86,7 @@ final class Client
 
 		State state = State.MATCH_BEGIN;
 
-		//Pathfinder pathfinder = Pathfinder.getInstance();
+		Pathfinder pathfinder = Pathfinder.getInstance();
 
 		while (true)
 		{
@@ -122,7 +122,7 @@ final class Client
 				if (tankList.size() > 0) { // if we successfully added the tanks
 					state = State.GAME_PLAY;
 					// load the map
-					//pathfinder.updateMap(gameState.getJSONObject("map"));
+					pathfinder.updateMap(gameState.getJSONObject("map"));
 				}
 			}
 
