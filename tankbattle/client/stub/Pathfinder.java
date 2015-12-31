@@ -243,7 +243,7 @@ public class Pathfinder {
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
 
         count = 0;
-        while (!samePosition(open.peek().parent, this.start)) {
+        while (!samePosition(open.peek().parent.parent, this.start)) {
             System.out.println("parent finding count: " + count);
             path.add(open.poll().parent.position);
             ++count;
