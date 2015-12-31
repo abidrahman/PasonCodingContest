@@ -190,7 +190,7 @@ public class Tank {
                 String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
                 commands.add(rotate_tracks_command);
 
-                String moveCommand = command.move(tankID, "FWD", 1, gameInfo.getClientToken());
+                String moveCommand = command.move(tankID, "FWD", 5, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
 
@@ -229,6 +229,7 @@ public class Tank {
             System.out.println("My position: x : " + this_tank.position.x + ", y: " + this_tank.position.y + " Path: x:" + x + ", y:" + y);
 
             double dir = this_tank.direction;
+            System.out.println("This tank direction: " + dir);
             double needed_dir = Math.atan2(y - this_tank.position.y, x - this_tank.position.x);
 
             double difference = dir - needed_dir;
