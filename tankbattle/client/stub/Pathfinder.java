@@ -167,8 +167,10 @@ public class Pathfinder {
             ArrayList<Node> neighbours = findNeighbours(current);
             System.out.println("num of neighbours: " + neighbours.size());
             for (Node neighbour : neighbours) {
-                System.out.println("impassable");
-                if (neighbour.impassable) continue;
+                if (neighbour.impassable) {
+                    System.out.println("impassable");
+                    continue;
+                }
                 double cost = current.cost + distance(current, neighbour);
                 if (open.contains(neighbour) && cost < neighbour.cost) {
                     System.out.println("1");
