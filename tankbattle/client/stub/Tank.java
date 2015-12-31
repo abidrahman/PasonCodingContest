@@ -165,6 +165,7 @@ public class Tank {
         */
 
         // Move towards the closest enemy.
+        /*
         ArrayList<Vector> path = test_PathFind();
 
         if (path.size() > 3) {
@@ -208,6 +209,7 @@ public class Tank {
             commands.add(moveCommand);
 
         }
+        */
 
         return commands;
     }
