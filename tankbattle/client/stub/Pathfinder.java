@@ -158,6 +158,7 @@ public class Pathfinder {
                 if ((i == -1 && j == -1) || (i == 1 && j == 1) || (i == -1 && j == 1) || (i == 1 && j == -1)) continue;
                 if (x_prime < 0 || !(x_prime < map.map_width) || y_prime < 0 || !(y_prime < map.map_height)) continue;
                 if (closed.contains(map.getNode(x_prime, y_prime))) continue;
+                if (map.getNode(x_prime, y_prime).impassable) continue;
                 neighbours.add(map.getNode(x_prime, y_prime));
             }
         }
