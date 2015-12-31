@@ -15,6 +15,7 @@ public class Tank {
     private JSONObject gameState;
     private Command command = new Command();
     private GameInfo gameInfo;
+    private Pathfinder pathfinder = Pathfinder.getInstance();
 
     private static final String CW = "CW";
     private static final String CCW = "CCW";
@@ -25,6 +26,12 @@ public class Tank {
     ArrayList<Vector> enemy_tank_coordinates = new ArrayList<>();
     private List<Projectile> projectiles = new ArrayList<Projectile>();
     public TankData this_tank = new TankData();
+
+    private enum State {
+        DOGFIGHT, HUNTING
+    }
+
+    private State state = State.DOGFIGHT;
 
     public static class Vector {
         double x;
@@ -49,6 +56,7 @@ public class Tank {
     public Tank(String tankID, GameInfo gameInfo) {
         this.tankID = tankID;
         this.gameInfo = gameInfo;
+
     }
 
     public void printID() {
@@ -77,6 +85,36 @@ public class Tank {
                 }
             }
         }
+    }
+
+    public ArrayList<String> strategy() throws JSONException {
+        ArrayList<String> commands = new ArrayList<>();
+
+        double distance = 0;
+        double closest_d = 1000;
+        Vector closest = new Vector();
+        boolean found_enemy = false;
+        for (Vector e : enemy_tank_coordinates) {
+            distance = distance(e, this_tank.position);
+            if ((distance < closest_d) && !doesCollide(this_tank.position, e)) {
+                found_enemy = true;
+                break;
+            }
+        }
+
+        if (found_enemy) state = State.DOGFIGHT;
+        if (!found_enemy)
+            state = State.HUNTING;
+
+        if (state == State.DOGFIGHT) {
+            commands.addAll(dodgeProjectiles());
+            commands.addAll(attack());
+        }
+        if (state == State.HUNTING) {
+            commands.addAll(huntEnemy());
+        }
+
+        return commands;
     }
 
     private double distance(Vector v1, Vector v2) {
@@ -116,12 +154,8 @@ public class Tank {
         }
     }
 
-    public List<String> movement() {
-        List<String> commands = new ArrayList<String>();
-
-        // calculate the necessary movement
-        // return the Strings needed to issue the commands
-
+    private ArrayList<String> dodgeProjectiles() {
+        ArrayList<String> commands = new ArrayList<String>();
 
         // check if any projectiles are headed towards this tank
 
@@ -161,15 +195,38 @@ public class Tank {
             }
 
         }
-        
-        // Move towards the closest enemy.
-        ArrayList<Vector> path = test_PathFind();
 
-        for (int i = path.size() - 2; i > 0; i--) {
+        return commands;
+    }
+
+    private ArrayList<String> huntEnemy() {
+        // Move towards the closest enemy.
+        ArrayList<String> commands = new ArrayList<String>();
+
+        double distance = 0;
+        double closest_d = 1000;
+        Vector closest = new Vector();
+        for (Vector e : enemy_tank_coordinates) {
+            distance = distance(e, this_tank.position);
+            if (distance < closest_d) {
+                closest_d = distance;
+                closest.x = e.x;
+                closest.y = e.y;
+
+            }
+        }
+
+        ArrayList<Vector> path = pathfinder.findPath(this_tank.position, closest);
+
+        for (Vector coord : path) {
+            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
+        }
+
+        if (path.size() > 3) {
 
             //Calculate next coordinate position relative to ours.
-            double Ox = path.get(i).x - this_tank.position.x;
-            double Oy = path.get(i).y - this_tank.position.y;
+            double Ox = path.get(path.size() - 2).x - this_tank.position.x;
+            double Oy = path.get(path.size() - 2).y - this_tank.position.y;
 
             if (Ox == 0.0) Ox = 0.00001;
             double angle_needed = Math.atan(Oy/Ox);
@@ -182,8 +239,8 @@ public class Tank {
             //Top-Right QUAD
             //Nothing changes.
 
-            //Top-Left QUAD & Bottom-left QUAD
-            if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0)) angle_needed = Math.PI + angle_needed;
+            //Top Left and Bottom-left QUAD
+            if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0 && Ox < 0)) angle_needed = Math.PI + angle_needed;
 
             //Bottom-Right QUAD
             if (angle_needed < 0 && Oy < 0) angle_needed = 2*Math.PI + angle_needed;
@@ -202,7 +259,7 @@ public class Tank {
             }
 
             //USE THE WHEELS
-            String moveCommand = command.move(tankID, "FWD", 2.5, gameInfo.getClientToken());
+            String moveCommand = command.move(tankID, "FWD", 10.0, gameInfo.getClientToken());
             commands.add(moveCommand);
 
         }
@@ -284,33 +341,6 @@ public class Tank {
         return false;
     }
 
-    private ArrayList<Vector> test_PathFind() {
-        double distance = 0;
-        double closest_d = 1000;
-        Vector closest = new Vector();
-        for (Vector e : enemy_tank_coordinates) {
-            distance = distance(e, this_tank.position);
-            if (distance < closest_d) {
-                closest_d = distance;
-                closest.x = e.x;
-                closest.y = e.y;
-
-            }
-        }
-
-        System.out.println("enemy position: x: " + closest.x + ", y:" + closest.y);
-
-        Pathfinder pathfinder = Pathfinder.getInstance();
-
-        ArrayList<Vector> path = pathfinder.findPath(this_tank.position, closest);
-
-        for (Vector coord : path) {
-            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
-        }
-        
-        return path;
-    }
-
     private double find_closest_enemy() throws JSONException {
 
         double distance;
@@ -346,7 +376,7 @@ public class Tank {
         //Nothing changes.
 
         //Top-Left QUAD & Bottom-left QUAD
-        if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0)) angle_needed = Math.PI + angle_needed;
+        if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0 && Ox < 0)) angle_needed = Math.PI + angle_needed;
 
         //Bottom-Right QUAD
         if (angle_needed < 0 && Oy < 0) angle_needed = 2*Math.PI + angle_needed;
@@ -379,8 +409,8 @@ public class Tank {
         return false;
     }
 
-    public List<String> attack() throws JSONException {
-        List<String> commands = new ArrayList<String>();
+    public ArrayList<String> attack() throws JSONException {
+        ArrayList<String> commands = new ArrayList<String>();
 
         // calculate the necessary attack (turret rotate, fire)
         // return the Strings needed to issue the commands

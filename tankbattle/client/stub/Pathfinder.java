@@ -93,8 +93,9 @@ public class Pathfinder {
                 int width = bounds.getJSONArray("size").getInt(0);
                 int height = bounds.getJSONArray("size").getInt(1);
                 System.out.println("corner_x: " + corner_x + ", corner_y: " + corner_y + ", width: " + width + ", height: " + height);
-                for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < width; x++) {
+                for (int y = -5; y < height+5; y++) {
+                    for (int x = -5; x < width+5; x++) {
+                        if (corner_x + x < 0 || !(corner_x + x < this.map.map_width) || corner_y + y < 0 || !(corner_y + y < this.map.map_height)) continue;
                         Node n = this.map.getNode(corner_x + x, corner_y + y);
                         n.impassable = true;
 //                        ++impassable_count;
@@ -154,7 +155,10 @@ public class Pathfinder {
                 int x_prime = x + i;
                 int y_prime = y + j;
                 if (x_prime == x && y_prime == y) continue;
+                if ((i == -1 && j == -1) || (i == 1 && j == 1) || (i == -1 && j == 1) || (i == 1 && j == -1)) continue;
                 if (x_prime < 0 || !(x_prime < map.map_width) || y_prime < 0 || !(y_prime < map.map_height)) continue;
+                if (closed.contains(map.getNode(x_prime, y_prime))) continue;
+                if (map.getNode(x_prime, y_prime).impassable) continue;
                 neighbours.add(map.getNode(x_prime, y_prime));
             }
         }
@@ -188,11 +192,15 @@ public class Pathfinder {
         int count = 0;
 
         while (!samePosition(open.peek(), this.end)) {
-            System.out.println("loop iteration: " + count);
+//            System.out.println("loop iteration: " + count);
+
+            if (count > 10000) break;
+
             Node current = open.poll();
-            System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
+//            System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
             closed.add(current);
             ArrayList<Node> neighbours = findNeighbours(current);
+//            System.out.println(open.size());
 //            System.out.println("num of neighbours: " + neighbours.size());
             for (int i = 0; i < neighbours.size(); i++) {
                 Node neighbour = neighbours.get(i);
@@ -201,11 +209,11 @@ public class Pathfinder {
                     continue;
                 }
                 double cost = current.cost + distance(current, neighbour);
-                if (open.contains(neighbour) && (neighbour.cost - cost > 1) ) {
+                if (open.contains(neighbour) && (neighbour.cost - cost > 0.1) ) {
 //                    System.out.println("1");
                     open.remove(neighbour);
                 }
-                if (closed.contains(neighbour) && (neighbour.cost - cost > 1) ) {
+                if (closed.contains(neighbour) && (neighbour.cost - cost > 0.1) ) {
                     closed.remove(neighbour);
 //                    System.out.println("2");
                 }
@@ -215,6 +223,7 @@ public class Pathfinder {
                     neighbour.parent = current;
                     open.add(neighbour);
                 }
+
             }
 //            for (Node neighbour : neighbours) {
 //                if (neighbour.impassable) {
@@ -241,14 +250,22 @@ public class Pathfinder {
             ++count;
         }
 
+        System.out.println("total loops: " + count);
+
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
 
+        if (open.peek() == null) {
+            System.out.println("no valid path!");
+            return path;
+        }
+
+        // reconstruct path to end
         count = 0;
-        while (!samePosition(open.peek().parent, this.start)) {
-            System.out.println("parent finding count: " + count);
-            if (open.peek().parent == null) break;
-            path.add(open.poll().parent.position);
-            ++count;
+
+        Node last = open.peek();
+        while (last.parent != null) {
+            path.add(last.position);
+            last = last.parent;
         }
 
         return path;

@@ -165,8 +165,7 @@ final class Client
 
 					tank.update(gameState);
 					List<String> commands = new ArrayList<String>();
-					commands.addAll(tank.movement());
-					commands.addAll(tank.attack());
+					commands.addAll(tank.strategy());
 
 					for (String cmd : commands) {
 						String response = comm.send(cmd, "msg");
