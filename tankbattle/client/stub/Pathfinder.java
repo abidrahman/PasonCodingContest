@@ -122,7 +122,7 @@ public class Pathfinder {
     }
 
     private double distance(Node n1, Node n2) {
-        return Math.sqrt(Math.pow(n1.position.x - n2.position.x, 2) + Math.pow(n2.position.y - n2.position.y, 2));
+        return Math.sqrt(Math.pow(n1.position.x - n2.position.x, 2) + Math.pow(n1.position.y - n2.position.y, 2));
     }
 
     public double heuristic(Node n1, Node n2) {
