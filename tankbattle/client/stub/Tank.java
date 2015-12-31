@@ -231,6 +231,7 @@ public class Tank {
             double dir = this_tank.direction;
             System.out.println("This tank direction: " + dir);
             double needed_dir = Math.atan2(y - this_tank.position.y, x - this_tank.position.x);
+            if (needed_dir < 0) needed_dir += 2 * Math.PI;
 
             double difference = dir - needed_dir;
 
