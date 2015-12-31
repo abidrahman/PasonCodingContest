@@ -229,7 +229,7 @@ public class Tank {
             System.out.println("My position: x : " + this_tank.position.x + ", y: " + this_tank.position.y + " Path: x:" + x + ", y:" + y);
 
             double dir = this_tank.direction;
-            double needed_dir = Math.atan2(y, x);
+            double needed_dir = Math.atan2(y - this_tank.position.y, x - this_tank.position.x);
 
             double difference = dir - needed_dir;
 
