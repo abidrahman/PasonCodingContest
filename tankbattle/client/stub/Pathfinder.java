@@ -203,15 +203,15 @@ public class Pathfinder {
                 }
                 double cost = current.cost + distance(current, neighbour);
                 if (open.contains(neighbour) && (neighbour.cost - cost > 1) ) {
-//                    System.out.println("1");
+                    System.out.println("1");
                     open.remove(neighbour);
                 }
                 if (closed.contains(neighbour) && (neighbour.cost - cost > 1) ) {
                     closed.remove(neighbour);
-//                    System.out.println("2");
+                    System.out.println("2");
                 }
                 if (!open.contains(neighbour) && !closed.contains(neighbour)) {
-//                    System.out.println("3");
+                    System.out.println("3");
                     neighbour.cost = cost;
                     neighbour.parent = current;
                     open.add(neighbour);
