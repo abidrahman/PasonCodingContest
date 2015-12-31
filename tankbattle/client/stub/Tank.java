@@ -239,8 +239,8 @@ public class Tank {
             //Top-Right QUAD
             //Nothing changes.
 
-            //Top-Left QUAD & Bottom-left QUAD
-            if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0)) angle_needed = Math.PI + angle_needed;
+            //Top Left and Bottom-left QUAD
+            if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0 && Ox < 0)) angle_needed = Math.PI + angle_needed;
 
             //Bottom-Right QUAD
             if (angle_needed < 0 && Oy < 0) angle_needed = 2*Math.PI + angle_needed;
@@ -376,7 +376,7 @@ public class Tank {
         //Nothing changes.
 
         //Top-Left QUAD & Bottom-left QUAD
-        if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0)) angle_needed = Math.PI + angle_needed;
+        if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0 && Ox < 0)) angle_needed = Math.PI + angle_needed;
 
         //Bottom-Right QUAD
         if (angle_needed < 0 && Oy < 0) angle_needed = 2*Math.PI + angle_needed;
