@@ -189,12 +189,13 @@ public class Pathfinder {
         int count = 0;
 
         while (!samePosition(open.peek(), this.end)) {
-            System.out.println("loop iteration: " + count);
+//            System.out.println("loop iteration: " + count);
+
             Node current = open.poll();
-            System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
+//            System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
             closed.add(current);
             ArrayList<Node> neighbours = findNeighbours(current);
-            System.out.println(open.size());
+//            System.out.println(open.size());
 //            System.out.println("num of neighbours: " + neighbours.size());
             for (int i = 0; i < neighbours.size(); i++) {
                 Node neighbour = neighbours.get(i);
@@ -204,15 +205,15 @@ public class Pathfinder {
                 }
                 double cost = current.cost + distance(current, neighbour);
                 if (open.contains(neighbour) && (neighbour.cost - cost > 1) ) {
-                    System.out.println("1");
+//                    System.out.println("1");
                     open.remove(neighbour);
                 }
                 if (closed.contains(neighbour) && (neighbour.cost - cost > 1) ) {
                     closed.remove(neighbour);
-                    System.out.println("2");
+//                    System.out.println("2");
                 }
                 if (!open.contains(neighbour) && !closed.contains(neighbour)) {
-                    System.out.println("3");
+//                    System.out.println("3");
                     neighbour.cost = cost;
                     neighbour.parent = current;
                     open.add(neighbour);
@@ -247,9 +248,9 @@ public class Pathfinder {
 
         count = 0;
         while (open.peek() != null && open.peek().parent != null && !samePosition(open.peek().parent, this.start)) {
-            System.out.println("parent finding count: " + count);
+//            System.out.println("parent finding count: " + count);
             path.add(open.poll().parent.position);
-            ++count;
+//            ++count;
         }
 
         return path;
