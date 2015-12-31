@@ -199,7 +199,7 @@ public class Tank {
         return commands;
     }
 
-    private ArrayList<String> huntEnemy() throws JSONException {
+    private ArrayList<String> huntEnemy() {
         // Move towards the closest enemy.
         ArrayList<String> commands = new ArrayList<String>();
 
@@ -223,22 +223,9 @@ public class Tank {
         }
 
         if (path.size() > 3) {
-
-            double angle_difference = find_closest_enemy();
-
-            //ROTATE THE WHEELS
-            if (angle_difference < Math.PI && angle_difference > 0) {
-                String rotate_tracks_command = command.rotate(tankID, CW, angle_difference, gameInfo.getClientToken());
-                commands.add(rotate_tracks_command);
-            } else if (angle_difference >= Math.PI && angle_difference < 2*Math.PI) {
-                String rotate_tracks_command = command.rotate(tankID, CCW, 2*Math.PI - angle_difference, gameInfo.getClientToken());
-                commands.add(rotate_tracks_command);
-            }
-
-            //USE THE WHEELS
-            String moveCommand = command.move(tankID, "FWD", 10.0, gameInfo.getClientToken());
-            commands.add(moveCommand);
-
+            double x = path.get(path.size() - 2).x;
+            double y = path.get(path.size() - 2).y;
+            System.out.println("My position: x : " + this_tank.position.x + ", y: " + this_tank.position.y + " Path: x:" + x + ", y:" + y);
         }
 
         return commands;
