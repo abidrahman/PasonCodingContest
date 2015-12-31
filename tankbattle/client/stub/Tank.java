@@ -391,7 +391,7 @@ public class Tank {
 
             double Mx = m.x - this_tank.position.x;
             double My = m.y - this_tank.position.y;
-            if (Mx == 0.0) Ox = 0.0001;
+            if (Mx == 0.0) Mx = 0.0001;
             double avoid_angle = Math.atan(My/Mx);
 
             //Top-Left QUAD & Bottom-left QUAD
