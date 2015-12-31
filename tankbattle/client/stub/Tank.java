@@ -27,6 +27,8 @@ public class Tank {
     private List<Projectile> projectiles = new ArrayList<Projectile>();
     public TankData this_tank = new TankData();
 
+    private boolean last_dodged_forward = false;
+
     int count;
 
     private enum State {
@@ -121,7 +123,7 @@ public class Tank {
                 String moveCommand = command.move(tankID, "FWD", 30, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
-            if (count % 50 == 1) commands.addAll(huntEnemy());
+            if (count % 30 == 1) commands.addAll(huntEnemy());
         }
 
         return commands;
@@ -232,10 +234,10 @@ public class Tank {
             System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
         }
 
-        if (path.size() > 3) {
-            double x = path.get(path.size() - 2).x;
+        if (path.size() > 10) {
+            double x = path.get(path.size() - 10).x;
             if (x == 0) x = 0.000000001;
-            double y = path.get(path.size() - 2).y;
+            double y = path.get(path.size() - 10).y;
             System.out.println("My position: x : " + this_tank.position.x + ", y: " + this_tank.position.y + " Path: x:" + x + ", y:" + y);
 
             double dir = this_tank.direction;
