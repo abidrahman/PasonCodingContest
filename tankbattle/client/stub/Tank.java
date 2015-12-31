@@ -206,7 +206,7 @@ public class Tank {
             }
 
             //USE THE WHEELS
-            String moveCommand = command.move(tankID, "FWD", 2.0, gameInfo.getClientToken());
+            String moveCommand = command.move(tankID, "FWD", 10.0, gameInfo.getClientToken());
             commands.add(moveCommand);
 
         }
