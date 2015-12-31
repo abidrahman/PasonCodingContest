@@ -193,6 +193,7 @@ public class Pathfinder {
             System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
             closed.add(current);
             ArrayList<Node> neighbours = findNeighbours(current);
+            System.out.println(open.size());
 //            System.out.println("num of neighbours: " + neighbours.size());
             for (int i = 0; i < neighbours.size(); i++) {
                 Node neighbour = neighbours.get(i);
