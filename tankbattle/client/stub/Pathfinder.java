@@ -141,6 +141,7 @@ public class Pathfinder {
     }
 
     private boolean samePosition(Node n1, Node n2) {
+        if (n1 == null | n2 == null) return true;
         return ((Math.abs(n1.position.x - n2.position.x) < 0.1) && (Math.abs(n1.position.y - n2.position.y) < 0.1));
     }
 
@@ -246,7 +247,7 @@ public class Pathfinder {
         while (!samePosition(open.peek().parent, this.start)) {
             System.out.println("parent finding count: " + count);
             path.add(open.poll().parent.position);
-            if (this.start == null) break;
+            if (open.peek().parent == null) break;
             ++count;
         }
 
