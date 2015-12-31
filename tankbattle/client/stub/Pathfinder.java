@@ -155,7 +155,7 @@ public class Pathfinder {
                 int y_prime = y + j;
                 if (x_prime == x && y_prime == y) continue;
                 if (x_prime < 0 || !(x_prime < map.map_width) || y_prime < 0 || !(y_prime < map.map_height)) continue;
-                if (map.getNode(x_prime, y_prime).parent == n) continue;
+                if (closed.contains(map.getNode(x_prime, y_prime))) continue;
                 neighbours.add(map.getNode(x_prime, y_prime));
             }
         }
@@ -204,11 +204,11 @@ public class Pathfinder {
                     continue;
                 }
                 double cost = current.cost + distance(current, neighbour);
-                if (open.contains(neighbour) && (neighbour.cost - cost > 1) ) {
+                if (open.contains(neighbour) && (neighbour.cost - cost > 0.1) ) {
 //                    System.out.println("1");
                     open.remove(neighbour);
                 }
-                if (closed.contains(neighbour) && (neighbour.cost - cost > 1) ) {
+                if (closed.contains(neighbour) && (neighbour.cost - cost > 0.1) ) {
                     closed.remove(neighbour);
 //                    System.out.println("2");
                 }
@@ -247,7 +247,8 @@ public class Pathfinder {
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
 
         count = 0;
-        while (open.peek() != null && open.peek().parent != null && !samePosition(open.peek().parent, this.start)) {
+        Node node = open.peek().parent;
+        while (!(node.parent == null)) {
 //            System.out.println("parent finding count: " + count);
             path.add(open.poll().parent.position);
 //            ++count;

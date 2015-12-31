@@ -125,6 +125,7 @@ public class Tank {
 
         // check if any projectiles are headed towards this tank
 
+        /*
         for (Projectile p : projectiles) {
 
             if (distance(this_tank.position, p.position) > p.range) continue;
@@ -161,15 +162,16 @@ public class Tank {
             }
 
         }
-        
+        */
+
         // Move towards the closest enemy.
         ArrayList<Vector> path = test_PathFind();
 
-        for (int i = path.size() - 2; i > 0; i--) {
+        if (true) {
 
             //Calculate next coordinate position relative to ours.
-            double Ox = path.get(i).x - this_tank.position.x;
-            double Oy = path.get(i).y - this_tank.position.y;
+            double Ox = path.get(path.size() - 2).x - this_tank.position.x;
+            double Oy = path.get(path.size() - 2).y - this_tank.position.y;
 
             if (Ox == 0.0) Ox = 0.00001;
             double angle_needed = Math.atan(Oy/Ox);
