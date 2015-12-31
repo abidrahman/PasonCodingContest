@@ -155,7 +155,7 @@ public class Pathfinder {
                 int x_prime = x + i;
                 int y_prime = y + j;
                 if (x_prime == x && y_prime == y) continue;
-                if ((i == -1 && j == -1) || (i == 1 && j == 1) || (i == -1 && j == 1) || (i == 1 && j == -1) ||)
+                if ((i == -1 && j == -1) || (i == 1 && j == 1) || (i == -1 && j == 1) || (i == 1 && j == -1)) continue;
                 if (x_prime < 0 || !(x_prime < map.map_width) || y_prime < 0 || !(y_prime < map.map_height)) continue;
                 if (closed.contains(map.getNode(x_prime, y_prime))) continue;
                 neighbours.add(map.getNode(x_prime, y_prime));
@@ -193,7 +193,7 @@ public class Pathfinder {
         while (!samePosition(open.peek(), this.end)) {
 //            System.out.println("loop iteration: " + count);
 
-            if (count > 15000) break;
+            if (count > 50000) break;
 
             Node current = open.poll();
 //            System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
