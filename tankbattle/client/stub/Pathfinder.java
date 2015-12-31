@@ -246,11 +246,18 @@ public class Pathfinder {
 
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
 
+        if (open.peek() == null) {
+            System.out.println("no valid path!");
+            return path;
+        }
+
+        // reconstruct path to end
         count = 0;
-        while (!(open.peek().parent == null)) {
-//            System.out.println("parent finding count: " + count);
-            path.add(open.poll().parent.position);
-//            ++count;
+
+        Node last = open.peek();
+        while (last.parent != null) {
+            path.add(last.position);
+            last = last.parent;
         }
 
         return path;
