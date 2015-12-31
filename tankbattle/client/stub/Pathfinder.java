@@ -95,6 +95,12 @@ public class Pathfinder {
                 }
             }
         }
+        for (Node[] row : this.map.nodes) {
+            System.out.println();
+            for (Node n : row) {
+                System.out.print(n.impassable);
+            }
+        }
     }
 
     private double distance(Node n1, Node n2) {
