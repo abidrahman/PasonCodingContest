@@ -250,7 +250,7 @@ public class Tank {
             else angle_difference = 2*Math.PI - (angle_needed - current_angle);
 
             //ROTATE THE WHEELS
-            if (angle_difference < Math.PI && angle_difference > 0.05) {
+            if (angle_difference < Math.PI && angle_difference > 0) {
                 String rotate_tracks_command = command.rotate(tankID, CW, angle_difference, gameInfo.getClientToken());
                 commands.add(rotate_tracks_command);
             } else if (angle_difference >= Math.PI && angle_difference < 2*Math.PI) {
