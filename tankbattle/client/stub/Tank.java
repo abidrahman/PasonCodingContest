@@ -239,6 +239,30 @@ public class Tank {
         return false;
     }
 
+    private void test_PathFind() {
+        double distance;
+        Vector closest = new Vector();
+        for (Vector e : enemy_tank_coordinates) {
+            distance = distance(e, this_tank.position);
+            if (distance < closest_distance) {
+                closest_distance = distance;
+                closest.x = e.x;
+                closest.y = e.y;
+
+            }
+        }
+
+        System.out.println("enemy position: x: " + closest.x + ", y:" + closest.y);
+
+        Pathfinder pathfinder = Pathfinder.getInstance();
+
+        ArrayList<Vector> path = pathfinder.findPath(this_tank.position, closest);
+
+        for (Vector coord : path) {
+            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
+        }
+    }
+
     private double find_closest_enemy() throws JSONException {
 
         double distance;
@@ -256,15 +280,7 @@ public class Tank {
             }
         }
 
-        System.out.println("enemy position: x: " + enemy.x + ", y:" + enemy.y);
-
-        Pathfinder pathfinder = Pathfinder.getInstance();
-
-        ArrayList<Vector> path = pathfinder.findPath(this_tank.position, enemy);
-
-        for (Vector coord : path) {
-            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
-        }
+        test_PathFind();
 
         //Calculate closest enemy's position relative to ours.
         double Ox = enemy.x - this_tank.position.x;
