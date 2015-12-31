@@ -116,7 +116,8 @@ public class Tank {
 
         if (state == State.HUNTING) {
             count++;
-            if (count % 10000 == 1) commands.addAll(huntEnemy());
+            System.out.println(count);
+            if (count % 100 == 1) commands.addAll(huntEnemy());
         }
 
         return commands;
@@ -195,7 +196,7 @@ public class Tank {
                 String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
                 commands.add(rotate_tracks_command);
 
-                String moveCommand = command.move(tankID, "FWD", 5, gameInfo.getClientToken());
+                String moveCommand = command.move(tankID, "FWD", 20, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
 
