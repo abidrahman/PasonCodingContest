@@ -156,7 +156,7 @@ public class Tank {
                 String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
                 commands.add(rotate_tracks_command);
 
-                String moveCommand = command.move(tankID, "FWD", 2.5, gameInfo.getClientToken());
+                String moveCommand = command.move(tankID, "FWD", 1, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
 
