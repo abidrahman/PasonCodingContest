@@ -15,6 +15,7 @@ public class Tank {
     private JSONObject gameState;
     private Command command = new Command();
     private GameInfo gameInfo;
+    private Pathfinder pathfinder = Pathfinder.getInstance();
 
     private static final String CW = "CW";
     private static final String CCW = "CCW";
@@ -165,7 +166,7 @@ public class Tank {
         */
 
         // Move towards the closest enemy.
-        /*
+
         ArrayList<Vector> path = test_PathFind();
 
         if (path.size() > 3) {
@@ -205,11 +206,10 @@ public class Tank {
             }
 
             //USE THE WHEELS
-            String moveCommand = command.move(tankID, "FWD", 2.5, gameInfo.getClientToken());
+            String moveCommand = command.move(tankID, "FWD", 2.0, gameInfo.getClientToken());
             commands.add(moveCommand);
 
         }
-        */
 
         return commands;
     }
@@ -303,8 +303,6 @@ public class Tank {
         }
 
         System.out.println("enemy position: x: " + closest.x + ", y:" + closest.y);
-
-        Pathfinder pathfinder = Pathfinder.getInstance();
 
         ArrayList<Vector> path = pathfinder.findPath(this_tank.position, closest);
 
