@@ -246,10 +246,24 @@ public class Tank {
             double difference = dir - needed_dir;
 
             String rotation;
-            if (difference > 0) rotation = CW;
-            else {
+
+            if (difference >= 0 && difference < Math.PI) {
+                rotation = CW;
+            }
+            else if (difference >= Math.PI && difference <= (2 * Math.PI)) {
+                rotation = CCW;
+                difference = 2 * Math.PI - difference;
+            }
+            else if (difference < 0 && difference > -Math.PI) {
                 rotation = CCW;
                 difference = -difference;
+            }
+            else if (difference <= -Math.PI && difference >= -2*Math.PI) {
+                rotation = CW;
+                difference = 2 * Math.PI * difference;
+            }
+            else {
+                rotation = CW;
             }
 
             String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
