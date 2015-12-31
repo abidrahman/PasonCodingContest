@@ -104,22 +104,22 @@ public class Pathfinder {
             }
         }
 
-        System.out.println("count 1: " + impassable_count);
-
-        impassable_count = 0;
-
-        for (Node[] row : this.map.nodes) {
-            System.out.println();
-            for (Node n : row) {
-                if (n.impassable) {
-                    System.out.print(1);
-                    ++impassable_count;
-                }
-                else System.out.print(0);
-            }
-        }
-
-        System.out.println("count 2: " + impassable_count);
+//        System.out.println("count 1: " + impassable_count);
+//
+//        impassable_count = 0;
+//
+//        for (Node[] row : this.map.nodes) {
+//            System.out.println();
+//            for (Node n : row) {
+//                if (n.impassable) {
+//                    System.out.print(1);
+//                    ++impassable_count;
+//                }
+//                else System.out.print(0);
+//            }
+//        }
+//
+//        System.out.println("count 2: " + impassable_count);
     }
 
     private double distance(Node n1, Node n2) {
