@@ -146,8 +146,8 @@ public class Pathfinder {
 
     private ArrayList<Node> findNeighbours(Node n) {
         ArrayList<Node> neighbours = new ArrayList<Node>();
-        int x = (int)n.position.x;
-        int y = (int)n.position.y;
+        int x = (int)Math.round(n.position.x);
+        int y = (int)Math.round(n.position.y);
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 int x_prime = x + i;
