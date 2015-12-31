@@ -81,7 +81,7 @@ public class Pathfinder {
         }
 
         // set impassable terrain in our map
-        int impassable_count = 0;
+//        int impassable_count = 0;
 
         JSONArray terrain_objects = map.getJSONArray("terrain");
         for (int i = 0; i < terrain_objects.length(); i++) {
@@ -97,32 +97,32 @@ public class Pathfinder {
                     for (int x = 0; x < width; x++) {
                         Node n = this.map.getNode(corner_x + x, corner_y + y);
                         n.impassable = true;
-                        ++impassable_count;
+//                        ++impassable_count;
                     }
                 }
             }
         }
 
-        System.out.println("count 1: " + impassable_count);
-
-        impassable_count = 0;
-
-        for (Node[] row : this.map.nodes) {
-            System.out.println();
-            for (Node n : row) {
-                if (n.impassable) {
-                    System.out.print(1);
-                    ++impassable_count;
-                }
-                else System.out.print(0);
-            }
-        }
-
-        System.out.println("count 2: " + impassable_count);
+//        System.out.println("count 1: " + impassable_count);
+//
+//        impassable_count = 0;
+//
+//        for (Node[] row : this.map.nodes) {
+//            System.out.println();
+//            for (Node n : row) {
+//                if (n.impassable) {
+//                    System.out.print(1);
+//                    ++impassable_count;
+//                }
+//                else System.out.print(0);
+//            }
+//        }
+//
+//        System.out.println("count 2: " + impassable_count);
     }
 
     private double distance(Node n1, Node n2) {
-        return Math.sqrt(Math.pow(n1.position.x - n2.position.x, 2) + Math.pow(n2.position.y - n2.position.y, 2));
+        return Math.sqrt(Math.pow(n1.position.x - n2.position.x, 2) + Math.pow(n1.position.y - n2.position.y, 2));
     }
 
     public double heuristic(Node n1, Node n2) {
@@ -141,13 +141,13 @@ public class Pathfinder {
     }
 
     private boolean samePosition(Node n1, Node n2) {
-        return ((n1.position.x == n2.position.x) && (n1.position.y == n2.position.y));
+        return ((Math.abs(n1.position.x - n2.position.x) < 0.1) && (Math.abs(n1.position.y - n2.position.y) < 0.1));
     }
 
     private ArrayList<Node> findNeighbours(Node n) {
         ArrayList<Node> neighbours = new ArrayList<Node>();
-        int x = (int)n.position.x;
-        int y = (int)n.position.y;
+        int x = (int)Math.round(n.position.x);
+        int y = (int)Math.round(n.position.y);
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 int x_prime = x + i;
@@ -164,10 +164,11 @@ public class Pathfinder {
 
         open.clear();
         closed.clear();
-        for (Node[] row : map.nodes) {
-            for (Node n : row) {
-                n.cost = 0.0;
-                n.parent = null;
+
+        for (int row = 0; row < map.map_height; row++) {
+            for (int col = 0; col < map.map_width; col++) {
+                map.nodes[row][col].parent = null;
+                map.nodes[row][col].cost = 0;
             }
         }
 
@@ -175,8 +176,8 @@ public class Pathfinder {
         this.end = new Node();
         this.start.position.x = start.x;
         this.start.position.y = start.y;
-        this.start.position.x = end.x;
-        this.start.position.y = end.y;
+        this.end.position.x = end.x;
+        this.end.position.y = end.y;
 
         open.add(this.start);
         System.out.println("start position: x: " + start.x + ", y:" + start.y);
@@ -184,41 +185,68 @@ public class Pathfinder {
         System.out.println("size of queue: " + open.size());
 
         int count = 0;
+
         while (!samePosition(open.peek(), this.end)) {
-//            System.out.println("loop iteration: " + count);
+            System.out.println("loop iteration: " + count);
             Node current = open.poll();
+            System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
             closed.add(current);
             ArrayList<Node> neighbours = findNeighbours(current);
 //            System.out.println("num of neighbours: " + neighbours.size());
-            for (Node neighbour : neighbours) {
+            for (int i = 0; i < neighbours.size(); i++) {
+                Node neighbour = neighbours.get(i);
                 if (neighbour.impassable) {
 //                    System.out.println("impassable");
                     continue;
                 }
                 double cost = current.cost + distance(current, neighbour);
-                if (open.contains(neighbour) && cost < neighbour.cost) {
+                if (open.contains(neighbour) && (neighbour.cost - cost > 1) ) {
 //                    System.out.println("1");
                     open.remove(neighbour);
                 }
-                else if (closed.contains(neighbour) && cost < neighbour.cost) {
+                if (closed.contains(neighbour) && (neighbour.cost - cost > 1) ) {
                     closed.remove(neighbour);
 //                    System.out.println("2");
                 }
-                else {
+                if (!open.contains(neighbour) && !closed.contains(neighbour)) {
 //                    System.out.println("3");
                     neighbour.cost = cost;
                     neighbour.parent = current;
                     open.add(neighbour);
                 }
             }
+//            for (Node neighbour : neighbours) {
+//                if (neighbour.impassable) {
+////                    System.out.println("impassable");
+//                    continue;
+//                }
+//                double cost = current.cost + distance(current, neighbour);
+//                if (open.contains(neighbour) && cost < neighbour.cost) {
+////                    System.out.println("1");
+//                    open.remove(neighbour);
+//                }
+//                else if (closed.contains(neighbour) && cost < neighbour.cost) {
+//                    closed.remove(neighbour);
+////                    System.out.println("2");
+//                }
+//                else {
+////                    System.out.println("3");
+//                    neighbour.cost = cost;
+//                    neighbour.parent = current;
+//                    open.add(neighbour);
+//                }
+//            }
 //            System.out.println("end of loop iteration: " + count);
             ++count;
         }
 
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
 
-        while (!samePosition(open.peek().parent, this.start)) {
+        count = 0;
+        while (!samePosition(open.peek().parent.parent, this.start)) {
+            System.out.println("parent finding count: " + count);
             path.add(open.poll().parent.position);
+            ++count;
         }
 
         return path;
