@@ -143,6 +143,7 @@ public class Pathfinder {
     }
 
     private boolean samePosition(Node n1, Node n2) {
+        if (n1 == null || n2 == null) return false;
         return ((Math.abs(n1.position.x - n2.position.x) < 0.1) && (Math.abs(n1.position.y - n2.position.y) < 0.1));
     }
 
