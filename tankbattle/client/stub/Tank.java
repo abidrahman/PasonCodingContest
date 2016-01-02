@@ -120,10 +120,10 @@ public class Tank {
             count++;
             System.out.println(count);
             if (count % 5 == 1) {
-                String moveCommand = command.move(tankID, "FWD", 20, gameInfo.getClientToken());
+                String moveCommand = command.move(tankID, "FWD", 15, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
-            if (count % 30 == 1) commands.addAll(huntEnemy());
+            if (count % 20 == 1) commands.addAll(huntEnemy());
         }
 
         return commands;
