@@ -176,6 +176,7 @@ public class Pathfinder {
             Node jumpPoint = jump((int)Math.round(current.position.x), (int)Math.round(current.position.y), direction_x, direction_y, 0);
             if (jumpPoint != null) successors.add(jumpPoint);
         }
+        if (successors.size() == 0) return neighbours;
         return successors;
     }
 
@@ -183,7 +184,7 @@ public class Pathfinder {
         int nextX = current_x + direction_x;
         int nextY = current_y + direction_y;
 
-        if (recursion_depth > 300) return map.getNode(nextX, nextY);
+        if (recursion_depth > 300) return null;
 
         if (nextX < 0 || !(nextX < map.map_width) || nextY < 0 || !(nextY < map.map_height)) return null;
         if (map.getNode(nextX, nextY).impassable) return null;
