@@ -216,6 +216,8 @@ public class Tank {
                         rotation = CW;
                     }
 
+                    if (difference > Math.PI/2) difference -= Math.PI;
+
                     String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
                     commands.add(rotate_tracks_command);
                 }
