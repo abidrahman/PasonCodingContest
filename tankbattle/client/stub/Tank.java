@@ -408,7 +408,7 @@ public class Tank {
         all_tanks.addAll(my_tank_coordinates);
         all_tanks.addAll(enemy_tank_coordinates);
 
-        for (Vector e : my_tank_coordinates) {
+        for (Vector e : all_tanks) {
             distance = distance(e, this_tank.position);
             if ((distance < closest_distance) && !doesCollide(this_tank.position, e)) {
                 closest_distance = distance;
