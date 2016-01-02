@@ -183,7 +183,7 @@ public class Pathfinder {
             Node jumpPoint = jump((int)Math.round(current.position.x), (int)Math.round(current.position.y), direction_x, direction_y, 0);
             if (jumpPoint != null) successors.add(jumpPoint);
         }
-        if (successors.size() == 0) return neighbours;
+
         return successors;
     }
 
