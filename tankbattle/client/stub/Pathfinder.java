@@ -341,6 +341,7 @@ public class Pathfinder {
             if (count > 3000) break;
 
             Node current = open.poll();
+            if (current == null) break;
 //            System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
             closed.add(current);
             ArrayList<Node> neighbours = findSuccessors(current);
@@ -349,7 +350,7 @@ public class Pathfinder {
             for (int i = 0; i < neighbours.size(); i++) {
                 Node neighbour = neighbours.get(i);
                 if (neighbour.impassable) {
-                    System.out.println("impassable");
+//                    System.out.println("impassable");
                     continue;
                 }
                 double cost = current.cost + distance(current, neighbour);
