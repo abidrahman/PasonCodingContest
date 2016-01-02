@@ -180,10 +180,10 @@ public class Pathfinder {
     }
 
     private Node jump(int current_x, int current_y, int direction_x, int direction_y, int recursion_depth) {
-        if (recursion_depth > 200) return null;
-
         int nextX = current_x + direction_x;
         int nextY = current_y + direction_y;
+
+        if (recursion_depth > 300) return map.getNode(nextX, nextY);
 
         if (nextX < 0 || !(nextX < map.map_width) || nextY < 0 || !(nextY < map.map_height)) return null;
         if (map.getNode(nextX, nextY).impassable) return null;
