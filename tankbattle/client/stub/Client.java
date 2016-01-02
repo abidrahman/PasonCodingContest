@@ -119,7 +119,7 @@ final class Client
 					}
 				}
 
-				System.out.println(gameState.toString());
+//				System.out.println(gameState.toString());
 
 				if (tankList.size() > 0) { // if we successfully added the tanks
 					state = State.GAME_PLAY;
@@ -162,6 +162,7 @@ final class Client
 				iter = tankList.iterator();
 				while (iter.hasNext()) {
 					Tank tank = iter.next();
+
 
 					tank.update(gameState);
 					List<String> commands = new ArrayList<String>();

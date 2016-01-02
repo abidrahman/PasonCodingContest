@@ -19,6 +19,8 @@ public class Tank {
 
     private static final String CW = "CW";
     private static final String CCW = "CCW";
+    private static final String FWD = "FWD";
+    private static final String REV = "REV";
 
     private Vector enemy = new Vector();
     private double closest_distance;
@@ -26,6 +28,10 @@ public class Tank {
     ArrayList<Vector> enemy_tank_coordinates = new ArrayList<>();
     private List<Projectile> projectiles = new ArrayList<Projectile>();
     public TankData this_tank = new TankData();
+
+    private boolean last_dodged_forward = false;
+
+    int count;
 
     private enum State {
         DOGFIGHT, HUNTING
@@ -96,12 +102,17 @@ public class Tank {
         boolean found_enemy = false;
         for (Vector e : enemy_tank_coordinates) {
             distance = distance(e, this_tank.position);
-            if ((distance < closest_d) && !doesCollide(this_tank.position, e)) {
+            if ((distance < closest_d) && !doesCollide(this_tank.position, e) && distance < 100) {
                 found_enemy = true;
                 break;
             }
         }
 
+        if (found_enemy && state == State.HUNTING) {
+            String stopMove = command.stop(tankID, "MOVE", gameInfo.getClientToken());
+            commands.add(stopMove);
+            state = State.DOGFIGHT;
+        }
         if (found_enemy) state = State.DOGFIGHT;
         if (!found_enemy)
             state = State.HUNTING;
@@ -110,8 +121,28 @@ public class Tank {
             commands.addAll(dodgeProjectiles());
             commands.addAll(attack());
         }
+
+
         if (state == State.HUNTING) {
-            commands.addAll(huntEnemy());
+            count++;
+            System.out.println(count);
+            commands.addAll(attack());
+            if (count % 5 == 1) {
+                String moveCommand = command.move(tankID, "FWD", 15, gameInfo.getClientToken());
+                commands.add(moveCommand);
+            }
+            if (count % 20 == 1) {
+                commands.addAll(huntEnemy());
+            }
+            if (count % 15 == 1) {
+                for (Vector friend : my_tank_coordinates) {
+                    if (Math.round(friend.x) != Math.round(this_tank.position.x) && Math.round(friend.y) != Math.round(this_tank.position.y) && distance(friend, this_tank.position) < 5) {
+                        String moveCommand = command.move(tankID, "REV", 5, gameInfo.getClientToken());
+                        commands.add(moveCommand);
+                        break;
+                    }
+                }
+            }
         }
 
         return commands;
@@ -154,6 +185,10 @@ public class Tank {
         }
     }
 
+    private boolean isDodging = false;
+    private boolean wasDodging = false;
+    private String dodgeDirection = FWD;
+
     private ArrayList<String> dodgeProjectiles() {
         ArrayList<String> commands = new ArrayList<String>();
 
@@ -172,34 +207,62 @@ public class Tank {
             distance = Math.abs(a*this_tank.position.x + b*this_tank.position.y + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 
             if (distance < 2.5) {
-                // calculate closest perpendicular direction
-                double perp_direction1 = p.direction + Math.PI / 2;
-                double perp_direction2 = p.direction - Math.PI / 2;
-                double difference = Math.min(this_tank.direction - perp_direction1, this_tank.direction - perp_direction2);
-                System.out.println(tankID + " " + this_tank.direction);
-                System.out.println(p.direction);
-                System.out.println(difference);
 
-                String rotation;
-                if (difference > 0) rotation = CW;
-                else {
-                    rotation = CCW;
-                    difference = -difference;
+                String moveCommand = command.move(tankID, dodgeDirection, 3, gameInfo.getClientToken());
+                commands.add(moveCommand);
+
+                isDodging = true;
+                if (isDodging && !wasDodging) {
+                    System.out.println("reversing direction");
+                    if (dodgeDirection.equals(FWD)) dodgeDirection = REV;
+                    if (dodgeDirection.equals(REV)) dodgeDirection = FWD;
                 }
 
-                String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
-                commands.add(rotate_tracks_command);
+                // calculate closest perpendicular direction
+                double perp_direction1 = p.direction + Math.PI / 2;
+                if (perp_direction1 < 0) perp_direction1 += Math.PI * 2;
+                if (perp_direction1 >= 2 * Math.PI) perp_direction1 -= Math.PI * 2;
+                double perp_direction2 = p.direction + Math.PI / 2;
+                if (perp_direction2 < 0) perp_direction2 += Math.PI * 2;
+                if (perp_direction2 >= 2 * Math.PI) perp_direction2 -= Math.PI * 2;
 
-                String moveCommand = command.move(tankID, "FWD", 1, gameInfo.getClientToken());
-                commands.add(moveCommand);
+                // if we are far away from the perpendicular direction
+                if (Math.min(Math.abs(this_tank.direction - perp_direction1), Math.abs(this_tank.direction - perp_direction2)) > 0.1) {
+                    double difference;
+                    String rotation;
+                    if (this_tank.direction >= perp_direction1 && Math.abs(this_tank.direction - perp_direction1) <= Math.abs(this_tank.direction - perp_direction2) && Math.abs(this_tank.direction - perp_direction1) <= Math.abs(2 * Math.PI - this_tank.direction - perp_direction2)) {
+                        difference = Math.abs(this_tank.direction - perp_direction1);
+                        rotation = CW;
+                    } else if (this_tank.direction < perp_direction1 && Math.abs(this_tank.direction - perp_direction1) <= Math.abs(this_tank.direction - perp_direction2) && Math.abs(this_tank.direction - perp_direction1) <= Math.abs(2 * Math.PI - this_tank.direction - perp_direction2)) {
+                        difference = Math.abs(this_tank.direction - perp_direction1);
+                        rotation = CCW;
+                    } else if (this_tank.direction <= perp_direction2 && Math.abs(this_tank.direction - perp_direction2) <= Math.abs(this_tank.direction - perp_direction1)) {
+                        difference = Math.abs(this_tank.direction - perp_direction2);
+                        rotation = CCW;
+                    } else {
+                        difference = Math.abs(this_tank.direction - perp_direction2);
+                        rotation = CW;
+                    }
+
+                    if (difference > Math.PI/2) difference -= Math.PI;
+
+                    String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
+                    commands.add(rotate_tracks_command);
+
+                    break;
+                }
             }
-
+            else {
+                isDodging = false;
+            }
         }
+
+        wasDodging = isDodging;
 
         return commands;
     }
 
-    private ArrayList<String> huntEnemy() throws JSONException {
+    private ArrayList<String> huntEnemy() {
         // Move towards the closest enemy.
         ArrayList<String> commands = new ArrayList<String>();
 
@@ -218,27 +281,50 @@ public class Tank {
 
         ArrayList<Vector> path = pathfinder.findPath(this_tank.position, closest);
 
-        for (Vector coord : path) {
-            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
-        }
+//        for (Vector coord : path) {
+//            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
+//        }
 
         if (path.size() > 3) {
+            double x = path.get(path.size() - 2).x;
+            if (x == 0) x = 0.000000001;
+            double y = path.get(path.size() - 2).y;
+            System.out.println("My position: x : " + this_tank.position.x + ", y: " + this_tank.position.y + " Path: x:" + x + ", y:" + y);
 
-            double angle_difference = find_closest_enemy();
+            double dir = this_tank.direction;
+            System.out.println("This tank direction: " + dir);
+            double needed_dir = Math.atan2(y - this_tank.position.y, x - this_tank.position.x);
+            if (needed_dir < 0) needed_dir += 2 * Math.PI;
 
-            //ROTATE THE WHEELS
-            if (angle_difference < Math.PI && angle_difference > 0.05) {
-                String rotate_tracks_command = command.rotate(tankID, CW, angle_difference, gameInfo.getClientToken());
-                commands.add(rotate_tracks_command);
-            } else if (angle_difference >= Math.PI && angle_difference < 2*Math.PI) {
-                String rotate_tracks_command = command.rotate(tankID, CCW, 2*Math.PI - angle_difference, gameInfo.getClientToken());
-                commands.add(rotate_tracks_command);
+            double difference = dir - needed_dir;
+
+            String rotation;
+
+            if (difference >= 0 && difference < Math.PI) {
+                rotation = CW;
+            }
+            else if (difference >= Math.PI && difference <= (2 * Math.PI)) {
+                rotation = CCW;
+                difference = 2 * Math.PI - difference;
+            }
+            else if (difference < 0 && difference > -Math.PI) {
+                rotation = CCW;
+                difference = -difference;
+            }
+            else if (difference <= -Math.PI && difference >= -2*Math.PI) {
+                rotation = CW;
+                difference = 2 * Math.PI + difference;
+            }
+            else {
+                rotation = CW;
             }
 
-            //USE THE WHEELS
-            String moveCommand = command.move(tankID, "FWD", 10.0, gameInfo.getClientToken());
-            commands.add(moveCommand);
+            String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
+            System.out.println(rotate_tracks_command);
+            commands.add(rotate_tracks_command);
 
+            String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
+            commands.add(moveCommand);
         }
 
         return commands;
@@ -327,7 +413,7 @@ public class Tank {
 
         for (Vector e : enemy_tank_coordinates) {
             distance = distance(e, this_tank.position);
-            if ((distance < closest_distance) && !doesCollide(this_tank.position,e)) {
+            if ((distance < closest_distance) && !doesCollide(this_tank.position, e)) {
                 closest_distance = distance;
                 enemy.x = e.x;
                 enemy.y = e.y;
@@ -365,23 +451,34 @@ public class Tank {
         return angle_difference;
     }
 
-    private boolean friendly_in_the_way(double closest_enemy_angle) {
+    private boolean friendly_in_the_way(double closest_enemy_angle) throws JSONException {
 
         //Calculate if there is a friendly in the way before the enemy, if so don't shoot.
         for (Vector m : my_tank_coordinates) {
 
             double Mx = m.x - this_tank.position.x;
             double My = m.y - this_tank.position.y;
+            if (Mx == 0.0) Mx = 0.0001;
+            /*
             double avoid_angle = Math.atan(My/Mx);
 
             //Top-Left QUAD & Bottom-left QUAD
-            if ((avoid_angle < 0 && My > 0) || (avoid_angle > 0 && My <= 0)) avoid_angle = Math.PI + avoid_angle;
+            if ((avoid_angle < 0 && My > 0) || (avoid_angle > 0 && My <= 0 && Mx < 0)) avoid_angle = Math.PI + avoid_angle;
             //Bottom-Right QUAD
             if (avoid_angle < 0 && My < 0) avoid_angle = 2*Math.PI + avoid_angle;
 
             if ((avoid_angle < (closest_enemy_angle + 0.1) && avoid_angle > (closest_enemy_angle - 0.1)) && (closest_distance > distance(this_tank.position,m))) {
                 return true;
             }
+            */
+
+            double avoid_angle = Math.atan2(My, Mx);
+            if (avoid_angle < 0) avoid_angle += 2 * Math.PI;
+
+            if ((avoid_angle < (closest_enemy_angle + 0.15) && avoid_angle > (closest_enemy_angle - 0.15)) && (closest_distance > distance(this_tank.position,m) && !doesCollide(this_tank.position, m))) {
+                return true;
+            }
+
         }
         return false;
     }
@@ -396,17 +493,21 @@ public class Tank {
         double closest_enemy = find_closest_enemy();
 
         //Only shoot if aiming at target && within range && friendly NOT in the way
-        if ((closest_enemy <= 0.05 || closest_enemy >= 2*Math.PI) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
+        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
-        } else if (closest_enemy < Math.PI && closest_enemy > 0.05) {
+        } else if (closest_enemy < Math.PI && closest_enemy > 0) {
             String rotate_command = command.rotateTurret(tankID, CW, closest_enemy, gameInfo.getClientToken());
             commands.add(rotate_command);
         } else if (closest_enemy >= Math.PI && closest_enemy < 2*Math.PI) {
             String rotate_command = command.rotateTurret(tankID, CCW, 2*Math.PI - closest_enemy, gameInfo.getClientToken());
             commands.add(rotate_command);
         }
-                    
+
+        if (friendly_in_the_way(closest_enemy)) {
+            String stop_fire = command.stop(tankID, "FIRE", gameInfo.getClientToken());
+            commands.add(stop_fire);
+        }
 
         return commands;
     }

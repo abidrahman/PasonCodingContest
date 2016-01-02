@@ -61,6 +61,7 @@ public class Pathfinder {
             }
         }
         public Node getNode(int x, int y) {
+            if (x < 0 || !(x < map.map_width) || y < 0 || !(y < map.map_height)) return null;
             return nodes[map_height - 1 - y][x];
         }
     }
@@ -81,7 +82,7 @@ public class Pathfinder {
         }
 
         // set impassable terrain in our map
-//        int impassable_count = 0;
+        int impassable_count = 0;
 
         JSONArray terrain_objects = map.getJSONArray("terrain");
         for (int i = 0; i < terrain_objects.length(); i++) {
@@ -93,12 +94,12 @@ public class Pathfinder {
                 int width = bounds.getJSONArray("size").getInt(0);
                 int height = bounds.getJSONArray("size").getInt(1);
                 System.out.println("corner_x: " + corner_x + ", corner_y: " + corner_y + ", width: " + width + ", height: " + height);
-                for (int y = -5; y < height+5; y++) {
-                    for (int x = -5; x < width+5; x++) {
+                for (int y = -1; y <= height + 1; y++) {
+                    for (int x = -1; x <= width + 1; x++) {
                         if (corner_x + x < 0 || !(corner_x + x < this.map.map_width) || corner_y + y < 0 || !(corner_y + y < this.map.map_height)) continue;
                         Node n = this.map.getNode(corner_x + x, corner_y + y);
                         n.impassable = true;
-//                        ++impassable_count;
+                        ++impassable_count;
                     }
                 }
             }
@@ -142,7 +143,7 @@ public class Pathfinder {
     }
 
     private boolean samePosition(Node n1, Node n2) {
-        if (n1 == null | n2 == null) return true;
+        if (n1 == null || n2 == null) return false;
         return ((Math.abs(n1.position.x - n2.position.x) < 0.1) && (Math.abs(n1.position.y - n2.position.y) < 0.1));
     }
 
@@ -150,12 +151,12 @@ public class Pathfinder {
         ArrayList<Node> neighbours = new ArrayList<Node>();
         int x = (int)Math.round(n.position.x);
         int y = (int)Math.round(n.position.y);
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
+        for (int i = -2; i <= 2; i++) {
+            for (int j = -2; j <= 2; j++) {
                 int x_prime = x + i;
                 int y_prime = y + j;
                 if (x_prime == x && y_prime == y) continue;
-                if ((i == -1 && j == -1) || (i == 1 && j == 1) || (i == -1 && j == 1) || (i == 1 && j == -1)) continue;
+//                if ((i == -1 && j == -1) || (i == 1 && j == 1) || (i == -1 && j == 1) || (i == 1 && j == -1)) continue;
                 if (x_prime < 0 || !(x_prime < map.map_width) || y_prime < 0 || !(y_prime < map.map_height)) continue;
                 if (closed.contains(map.getNode(x_prime, y_prime))) continue;
                 if (map.getNode(x_prime, y_prime).impassable) continue;
@@ -163,6 +164,149 @@ public class Pathfinder {
             }
         }
         return neighbours;
+    }
+
+    private int clamp(int num, int lower, int upper) {
+        if (num < lower) num = lower;
+        else if (num > upper) num = upper;
+        return num;
+    }
+
+    private ArrayList<Node> findSuccessors(Node current) {
+        ArrayList<Node> successors = new ArrayList<>();
+        ArrayList<Node> neighbours = findNeighbours(current);
+
+        for (Node neighbour : neighbours) {
+            int direction_x = clamp((int) Math.round(neighbour.position.x - current.position.x), -1, 1);
+            int direction_y = clamp((int) Math.round(neighbour.position.y - current.position.y), -1, 1);
+
+            Node jumpPoint = jump((int)Math.round(current.position.x), (int)Math.round(current.position.y), direction_x, direction_y, 0);
+            if (jumpPoint != null) successors.add(jumpPoint);
+        }
+
+        return successors;
+    }
+
+    private Node jump(int current_x, int current_y, int direction_x, int direction_y, int recursion_depth) {
+        int nextX = current_x + direction_x;
+        int nextY = current_y + direction_y;
+
+        if (recursion_depth > 100) return null;
+
+        if (nextX < 0 || !(nextX < map.map_width) || nextY < 0 || !(nextY < map.map_height)) return null;
+        if (map.getNode(nextX, nextY).impassable) return null;
+        if (samePosition(map.getNode(nextX, nextY), end)) return end;
+
+        if (direction_y != 0 && direction_x != 0) {
+            if (direction_x == 1 && direction_y == 1) {
+                if (map.getNode(nextX - 1, nextY) != null) {
+                    if (map.getNode(nextX - 1, nextY).impassable) {
+                        return map.getNode(nextX, nextY);
+                    }
+                }
+                if (map.getNode(nextX, nextY - 1) != null) {
+                    if (map.getNode(nextX, nextY - 1).impassable) {
+                        return map.getNode(nextX, nextY);
+                    }
+                }
+            }
+            if (direction_x == -1 && direction_y == 1) {
+                if (map.getNode(nextX + 1, nextY) != null) {
+                    if (map.getNode(nextX + 1, nextY).impassable) {
+                        map.getNode(nextX, nextY);
+                    }
+                }
+                if (map.getNode(nextX, nextY - 1) != null) {
+                    if (map.getNode(nextX, nextY - 1).impassable) {
+                        map.getNode(nextX, nextY);
+                    }
+                }
+            }
+            if (direction_x == 1 && direction_y == -1) {
+                if (map.getNode(nextX - 1, nextY) != null) {
+                    if (map.getNode(nextX - 1, nextY).impassable){
+                        return map.getNode(nextX, nextY);
+                    }
+                }
+                if (map.getNode(nextX, nextY + 1) != null) {
+                    if (map.getNode(nextX, nextY + 1).impassable) {
+                        return map.getNode(nextX, nextY);
+                    }
+                }
+            }
+            if (direction_x == -1 && direction_y == -1) {
+                if (map.getNode(nextX + 1, nextY) != null) {
+                    if (map.getNode(nextX + 1, nextY).impassable) {
+                        return map.getNode(nextX, nextY);
+                    }
+                }
+                if (map.getNode(nextX, nextY + 1) != null) {
+                    if (map.getNode(nextX, nextY + 1).impassable) {
+                        return map.getNode(nextX, nextY);
+                    }
+                }
+            }
+            if (jump(nextX, nextY, direction_x, 0, ++recursion_depth) != null ||
+                    jump(nextX, nextY, 0, direction_y, ++recursion_depth) != null)
+            {
+                return map.getNode(nextX, nextY);
+            }
+        }
+        else {
+            if (direction_y == 0) { // horizontal case
+                if (direction_x == 1) {
+                    if (map.getNode(nextX, nextY + 1) != null && map.getNode(nextX + 1, nextY + 1) != null) {
+                        if (map.getNode(nextX, nextY + 1).impassable && !map.getNode(nextX + 1, nextY + 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                    if (map.getNode(nextX, nextY - 1) != null && map.getNode(nextX + 1, nextY - 1) != null) {
+                        if (map.getNode(nextX, nextY - 1).impassable && !map.getNode(nextX + 1, nextY - 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                }
+                if (direction_x == -1) {
+                    if (map.getNode(nextX, nextY + 1) != null && map.getNode(nextX - 1, nextY + 1) != null) {
+                        if (map.getNode(nextX, nextY + 1).impassable && !map.getNode(nextX - 1, nextY + 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                    if (map.getNode(nextX, nextY - 1) != null && map.getNode(nextX - 1, nextY - 1) != null) {
+                        if (map.getNode(nextX, nextY - 1).impassable && !map.getNode(nextX - 1, nextY - 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                }
+            }
+            else {
+                if (direction_y == 1) {
+                    if (map.getNode(nextX + 1, nextY) != null && map.getNode(nextX + 1, nextY + 1) != null) {
+                        if (map.getNode(nextX + 1, nextY).impassable && !map.getNode(nextX + 1, nextY + 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                    if (map.getNode(nextX - 1, nextY) != null && map.getNode(nextX - 1, nextY + 1) != null) {
+                        if (map.getNode(nextX - 1, nextY).impassable && !map.getNode(nextX - 1, nextY + 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                }
+                if (direction_y == -1) {
+                    if (map.getNode(nextX + 1, nextY) != null && map.getNode(nextX + 1, nextY - 1) != null) {
+                        if (map.getNode(nextX + 1, nextY).impassable && !map.getNode(nextX + 1, nextY - 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                    if (map.getNode(nextX - 1, nextY) != null && map.getNode(nextX - 1, nextY - 1) != null) {
+                        if (map.getNode(nextX - 1, nextY).impassable && !map.getNode(nextX - 1, nextY - 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                }
+            }
+        }
+        return jump(nextX, nextY, direction_x, direction_y, ++recursion_depth);
     }
 
     public ArrayList<Tank.Vector> findPath(Tank.Vector start, Tank.Vector end) {
@@ -187,19 +331,20 @@ public class Pathfinder {
         open.add(this.start);
         System.out.println("start position: x: " + start.x + ", y:" + start.y);
         System.out.println("end position: x: " + end.x + ", y:" + end.y);
-        System.out.println("size of queue: " + open.size());
+
 
         int count = 0;
 
         while (!samePosition(open.peek(), this.end)) {
 //            System.out.println("loop iteration: " + count);
-
-            if (count > 10000) break;
+//            System.out.println("size of queue: " + open.size());
+            if (count > 500) break;
 
             Node current = open.poll();
+            if (current == null) break;
 //            System.out.println("current x: " + current.position.x + ", y: " + current.position.y);
             closed.add(current);
-            ArrayList<Node> neighbours = findNeighbours(current);
+            ArrayList<Node> neighbours = findSuccessors(current);
 //            System.out.println(open.size());
 //            System.out.println("num of neighbours: " + neighbours.size());
             for (int i = 0; i < neighbours.size(); i++) {
@@ -209,11 +354,11 @@ public class Pathfinder {
                     continue;
                 }
                 double cost = current.cost + distance(current, neighbour);
-                if (open.contains(neighbour) && (neighbour.cost - cost > 0.1) ) {
+                if (open.contains(neighbour) && (neighbour.cost - cost > 1) ) {
 //                    System.out.println("1");
                     open.remove(neighbour);
                 }
-                if (closed.contains(neighbour) && (neighbour.cost - cost > 0.1) ) {
+                if (closed.contains(neighbour) && (neighbour.cost - cost > 1) ) {
                     closed.remove(neighbour);
 //                    System.out.println("2");
                 }
@@ -225,28 +370,6 @@ public class Pathfinder {
                 }
 
             }
-//            for (Node neighbour : neighbours) {
-//                if (neighbour.impassable) {
-////                    System.out.println("impassable");
-//                    continue;
-//                }
-//                double cost = current.cost + distance(current, neighbour);
-//                if (open.contains(neighbour) && cost < neighbour.cost) {
-////                    System.out.println("1");
-//                    open.remove(neighbour);
-//                }
-//                else if (closed.contains(neighbour) && cost < neighbour.cost) {
-//                    closed.remove(neighbour);
-////                    System.out.println("2");
-//                }
-//                else {
-////                    System.out.println("3");
-//                    neighbour.cost = cost;
-//                    neighbour.parent = current;
-//                    open.add(neighbour);
-//                }
-//            }
-//            System.out.println("end of loop iteration: " + count);
             ++count;
         }
 
