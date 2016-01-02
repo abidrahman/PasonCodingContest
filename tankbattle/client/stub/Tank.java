@@ -386,15 +386,23 @@ public class Tank {
                 if (obstacle.getString("type").equals("SOLID")) {
 
                     JSONObject bounds = obstacle.getJSONObject("boundingBox");
-                    Vector obs_start = new Vector();
-                    Vector obs_end = new Vector();
-                    obs_start.x = (double)bounds.getJSONArray("corner").getInt(0);
-                    obs_start.y = (double)bounds.getJSONArray("corner").getInt(1);
-                    obs_end.x = obs_start.x + (double)bounds.getJSONArray("size").getInt(0);
-                    obs_end.y = obs_start.y + (double)bounds.getJSONArray("size").getInt(1);
+                    Vector obs_botleft = new Vector();
+                    Vector obs_topright = new Vector();
+                    Vector obs_topleft = new Vector();
+                    Vector obs_botright = new Vector();
+                    obs_botleft.x = (double)bounds.getJSONArray("corner").getInt(0);
+                    obs_botleft.y = (double)bounds.getJSONArray("corner").getInt(1);
+                    obs_topright.x = obs_botleft.x + (double)bounds.getJSONArray("size").getInt(0);
+                    obs_topright.y = obs_botleft.y + (double)bounds.getJSONArray("size").getInt(1);
+                    obs_botright.x = obs_topright.x;
+                    obs_botright.y = obs_botleft.y;
+                    obs_topleft.x = obs_botleft.x;
+                    obs_topleft.y = obs_topright.y;
 
-                    if (Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_start.x,obs_start.y,obs_end.x,obs_end.y) ||
-                            Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_end.x,obs_start.y,obs_start.x,obs_end.y)) {
+                    if (Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_botleft.x,obs_botleft.y,obs_topleft.x,obs_topleft.y) ||
+                            Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_topleft.x,obs_topleft.y,obs_topright.x,obs_topright.y) ||
+                            Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_topright.x,obs_topright.y,obs_botright.x,obs_botright.y) ||
+                            Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_botright.x,obs_botright.y,obs_botleft.x,obs_botleft.y)) {
                         return true;
                     }
                 }
