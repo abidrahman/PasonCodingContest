@@ -180,7 +180,7 @@ public class Pathfinder {
     }
 
     private Node jump(int current_x, int current_y, int direction_x, int direction_y, int recursion_depth) {
-        if (recursion_depth > 500) return null;
+        if (recursion_depth > 200) return null;
 
         int nextX = current_x + direction_x;
         int nextY = current_y + direction_y;
