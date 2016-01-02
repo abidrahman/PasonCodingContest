@@ -447,7 +447,7 @@ public class Tank {
         double closest_enemy = find_closest_enemy();
 
         //Only shoot if aiming at target && within range && friendly NOT in the way
-        if ((closest_enemy <= 0.02 || closest_enemy >= 2*Math.PI) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
+        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
         } else if (closest_enemy < Math.PI && closest_enemy > 0.02) {
