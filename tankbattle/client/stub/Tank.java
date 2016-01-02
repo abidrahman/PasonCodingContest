@@ -131,7 +131,14 @@ public class Tank {
                 String moveCommand = command.move(tankID, "FWD", 15, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
-            if (count % 20 == 1) commands.addAll(huntEnemy());
+            if (count % 20 == 1) {
+                commands.addAll(huntEnemy());
+                for (Vector friend : my_tank_coordinates) {
+                    if (distance(friend, this_tank.position) < 2) {
+                        String moveCommand = command.move(tankID, "REV", 5, gameInfo.getClientToken());
+                    }
+                }
+            }
         }
 
         return commands;
