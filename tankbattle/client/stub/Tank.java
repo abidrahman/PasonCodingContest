@@ -197,7 +197,7 @@ public class Tank {
 
             if (distance < 2.5) {
 
-                String moveCommand = command.move(tankID, "FWD", 20, gameInfo.getClientToken());
+                String moveCommand = command.move(tankID, dodgeDirection, 5, gameInfo.getClientToken());
                 commands.add(moveCommand);
 
                 isDodging = true;
