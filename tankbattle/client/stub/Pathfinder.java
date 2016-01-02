@@ -94,8 +94,8 @@ public class Pathfinder {
                 int width = bounds.getJSONArray("size").getInt(0);
                 int height = bounds.getJSONArray("size").getInt(1);
                 System.out.println("corner_x: " + corner_x + ", corner_y: " + corner_y + ", width: " + width + ", height: " + height);
-                for (int y = -2; y <= height+2; y++) {
-                    for (int x = -2; x <= width+2; x++) {
+                for (int y = -1; y <= height + 1; y++) {
+                    for (int x = -1; x <= width + 1; x++) {
                         if (corner_x + x < 0 || !(corner_x + x < this.map.map_width) || corner_y + y < 0 || !(corner_y + y < this.map.map_height)) continue;
                         Node n = this.map.getNode(corner_x + x, corner_y + y);
                         n.impassable = true;
@@ -150,8 +150,8 @@ public class Pathfinder {
         ArrayList<Node> neighbours = new ArrayList<Node>();
         int x = (int)Math.round(n.position.x);
         int y = (int)Math.round(n.position.y);
-        for (int i = -4; i <= 4; i++) {
-            for (int j = -4; j <= 4; j++) {
+        for (int i = -2; i <= 2; i++) {
+            for (int j = -2; j <= 2; j++) {
                 int x_prime = x + i;
                 int y_prime = y + j;
                 if (x_prime == x && y_prime == y) continue;
