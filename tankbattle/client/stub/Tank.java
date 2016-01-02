@@ -106,6 +106,11 @@ public class Tank {
             }
         }
 
+        if (found_enemy && state == State.HUNTING) {
+            String stopMove = command.stop(tankID, "MOVE", gameInfo.getClientToken());
+            commands.add(stopMove);
+            state = State.DOGFIGHT;
+        }
         if (found_enemy) state = State.DOGFIGHT;
         if (!found_enemy)
             state = State.HUNTING;
@@ -362,7 +367,7 @@ public class Tank {
 
         for (Vector e : enemy_tank_coordinates) {
             distance = distance(e, this_tank.position);
-            if ((distance < closest_distance) && !doesCollide(this_tank.position,e)) {
+            if ((distance < closest_distance) && !doesCollide(this_tank.position, e)) {
                 closest_distance = distance;
                 enemy.x = e.x;
                 enemy.y = e.y;
@@ -400,7 +405,7 @@ public class Tank {
         return angle_difference;
     }
 
-    private boolean friendly_in_the_way(double closest_enemy_angle) {
+    private boolean friendly_in_the_way(double closest_enemy_angle) throws JSONException {
 
         //Calculate if there is a friendly in the way before the enemy, if so don't shoot.
         for (Vector m : my_tank_coordinates) {
@@ -408,6 +413,7 @@ public class Tank {
             double Mx = m.x - this_tank.position.x;
             double My = m.y - this_tank.position.y;
             if (Mx == 0.0) Mx = 0.0001;
+            /*
             double avoid_angle = Math.atan(My/Mx);
 
             //Top-Left QUAD & Bottom-left QUAD
@@ -418,6 +424,15 @@ public class Tank {
             if ((avoid_angle < (closest_enemy_angle + 0.1) && avoid_angle > (closest_enemy_angle - 0.1)) && (closest_distance > distance(this_tank.position,m))) {
                 return true;
             }
+            */
+
+            double avoid_angle = Math.atan2(My, Mx);
+            if (avoid_angle < 0) avoid_angle += 2 * Math.PI;
+
+            if ((avoid_angle < (closest_enemy_angle + 0.15) && avoid_angle > (closest_enemy_angle - 0.15)) && (closest_distance > distance(this_tank.position,m) && !doesCollide(this_tank.position, m))) {
+                return true;
+            }
+
         }
         return false;
     }
