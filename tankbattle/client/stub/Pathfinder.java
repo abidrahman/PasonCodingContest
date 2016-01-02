@@ -243,27 +243,55 @@ public class Pathfinder {
             }
         }
         else {
-            if (direction_y == 0) {
-                if (map.getNode(nextX, nextY + 1) != null) {
-                    if (map.getNode(nextX, nextY + 1).impassable) {
-                        return map.getNode(nextX, nextY);
+            if (direction_y == 0) { // horizontal case
+                if (direction_x == 1) {
+                    if (map.getNode(nextX, nextY + 1) != null && map.getNode(nextX + 1, nextY + 1) != null) {
+                        if (map.getNode(nextX, nextY + 1).impassable && !map.getNode(nextX + 1, nextY + 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                    if (map.getNode(nextX, nextY - 1) != null && map.getNode(nextX + 1, nextY - 1) != null) {
+                        if (map.getNode(nextX, nextY - 1).impassable && !map.getNode(nextX + 1, nextY - 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
                     }
                 }
-                if (map.getNode(nextX, nextY - 1) != null) {
-                    if (map.getNode(nextX, nextY - 1).impassable) {
-                        return map.getNode(nextX, nextY);
+                if (direction_x == -1) {
+                    if (map.getNode(nextX, nextY + 1) != null && map.getNode(nextX - 1, nextY + 1) != null) {
+                        if (map.getNode(nextX, nextY + 1).impassable && !map.getNode(nextX - 1, nextY + 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                    if (map.getNode(nextX, nextY - 1) != null && map.getNode(nextX - 1, nextY - 1) != null) {
+                        if (map.getNode(nextX, nextY - 1).impassable && !map.getNode(nextX - 1, nextY - 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
                     }
                 }
             }
             else {
-                if (map.getNode(nextX + 1, nextY) != null) {
-                    if (map.getNode(nextX + 1, nextY).impassable) {
-                        return map.getNode(nextX, nextY);
+                if (direction_y == 1) {
+                    if (map.getNode(nextX + 1, nextY) != null && map.getNode(nextX + 1, nextY + 1) != null) {
+                        if (map.getNode(nextX + 1, nextY).impassable && !map.getNode(nextX + 1, nextY + 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                    if (map.getNode(nextX - 1, nextY) != null && map.getNode(nextX - 1, nextY + 1) != null) {
+                        if (map.getNode(nextX - 1, nextY).impassable && !map.getNode(nextX - 1, nextY + 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
                     }
                 }
-                if (map.getNode(nextX - 1, nextY) != null) {
-                    if (map.getNode(nextX - 1, nextY).impassable) {
-                        return map.getNode(nextX, nextY);
+                if (direction_y == -1) {
+                    if (map.getNode(nextX + 1, nextY) != null && map.getNode(nextX + 1, nextY - 1) != null) {
+                        if (map.getNode(nextX + 1, nextY).impassable && !map.getNode(nextX + 1, nextY - 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
+                    }
+                    if (map.getNode(nextX - 1, nextY) != null && map.getNode(nextX - 1, nextY - 1) != null) {
+                        if (map.getNode(nextX - 1, nextY).impassable && !map.getNode(nextX - 1, nextY - 1).impassable) {
+                            return map.getNode(nextX, nextY);
+                        }
                     }
                 }
             }
