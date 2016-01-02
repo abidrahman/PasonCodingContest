@@ -197,11 +197,12 @@ public class Tank {
 
             if (distance < 2.5) {
 
-                String moveCommand = command.move(tankID, dodgeDirection, 5, gameInfo.getClientToken());
+                String moveCommand = command.move(tankID, dodgeDirection, 3, gameInfo.getClientToken());
                 commands.add(moveCommand);
 
                 isDodging = true;
                 if (isDodging && !wasDodging) {
+                    System.out.println("reversing direction");
                     if (dodgeDirection.equals(FWD)) dodgeDirection = REV;
                     if (dodgeDirection.equals(REV)) dodgeDirection = FWD;
                 }
@@ -269,9 +270,9 @@ public class Tank {
 
         ArrayList<Vector> path = pathfinder.findPath(this_tank.position, closest);
 
-        for (Vector coord : path) {
-            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
-        }
+//        for (Vector coord : path) {
+//            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
+//        }
 
         if (path.size() > 3) {
             double x = path.get(path.size() - 2).x;
