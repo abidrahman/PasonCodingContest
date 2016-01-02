@@ -177,8 +177,8 @@ public class Pathfinder {
         ArrayList<Node> neighbours = findNeighbours(current);
 
         for (Node neighbour : neighbours) {
-            int direction_x = clamp((int)Math.round(neighbour.position.x - current.position.x), -1, 1);
-            int direction_y = clamp((int)Math.round(neighbour.position.y - current.position.y), -1, 1);
+            int direction_x = clamp((int) Math.round(neighbour.position.x - current.position.x), -1, 1);
+            int direction_y = clamp((int) Math.round(neighbour.position.y - current.position.y), -1, 1);
 
             Node jumpPoint = jump((int)Math.round(current.position.x), (int)Math.round(current.position.y), direction_x, direction_y, 0);
             if (jumpPoint != null) successors.add(jumpPoint);
@@ -331,13 +331,13 @@ public class Pathfinder {
         open.add(this.start);
         System.out.println("start position: x: " + start.x + ", y:" + start.y);
         System.out.println("end position: x: " + end.x + ", y:" + end.y);
-        System.out.println("size of queue: " + open.size());
+
 
         int count = 0;
 
         while (!samePosition(open.peek(), this.end)) {
 //            System.out.println("loop iteration: " + count);
-
+            System.out.println("size of queue: " + open.size());
             if (count > 3000) break;
 
             Node current = open.poll();
