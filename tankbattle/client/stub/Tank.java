@@ -19,6 +19,8 @@ public class Tank {
 
     private static final String CW = "CW";
     private static final String CCW = "CCW";
+    private static final String FWD = "FWD";
+    private static final String REV = "REV";
 
     private Vector enemy = new Vector();
     private double closest_distance;
@@ -172,6 +174,10 @@ public class Tank {
         }
     }
 
+    private boolean isDodging = false;
+    private boolean wasDodging = false;
+    private String dodgeDirection = FWD;
+
     private ArrayList<String> dodgeProjectiles() {
         ArrayList<String> commands = new ArrayList<String>();
 
@@ -190,6 +196,16 @@ public class Tank {
             distance = Math.abs(a*this_tank.position.x + b*this_tank.position.y + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 
             if (distance < 2.5) {
+
+                String moveCommand = command.move(tankID, "FWD", 20, gameInfo.getClientToken());
+                commands.add(moveCommand);
+
+                isDodging = true;
+                if (isDodging && !wasDodging) {
+                    if (dodgeDirection.equals(FWD)) dodgeDirection = REV;
+                    if (dodgeDirection.equals(REV)) dodgeDirection = FWD;
+                }
+
                 // calculate closest perpendicular direction
                 double perp_direction1 = p.direction + Math.PI / 2;
                 if (perp_direction1 < 0) perp_direction1 += Math.PI * 2;
@@ -220,13 +236,16 @@ public class Tank {
 
                     String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
                     commands.add(rotate_tracks_command);
+
+                    break;
                 }
-
-                String moveCommand = command.move(tankID, "FWD", 20, gameInfo.getClientToken());
-                commands.add(moveCommand);
             }
-
+            else {
+                isDodging = false;
+            }
         }
+
+        wasDodging = isDodging;
 
         return commands;
     }
