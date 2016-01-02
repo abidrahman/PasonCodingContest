@@ -338,7 +338,7 @@ public class Pathfinder {
         while (!samePosition(open.peek(), this.end)) {
 //            System.out.println("loop iteration: " + count);
 //            System.out.println("size of queue: " + open.size());
-            if (count > 1000) break;
+            if (count > 300) break;
 
             Node current = open.poll();
             if (current == null) break;
