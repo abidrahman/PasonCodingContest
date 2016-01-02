@@ -120,7 +120,7 @@ public class Tank {
             count++;
             System.out.println(count);
             if (count % 5 == 1) {
-                String moveCommand = command.move(tankID, "FWD", 30, gameInfo.getClientToken());
+                String moveCommand = command.move(tankID, "FWD", 20, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
             if (count % 30 == 1) commands.addAll(huntEnemy());
@@ -441,9 +441,6 @@ public class Tank {
         } else if (closest_enemy >= Math.PI && closest_enemy < 2*Math.PI) {
             String rotate_command = command.rotateTurret(tankID, CCW, 2*Math.PI - closest_enemy, gameInfo.getClientToken());
             commands.add(rotate_command);
-        } else {
-            String fire_command = command.fire(tankID, gameInfo.getClientToken());
-            commands.add(fire_command);
         }
                     
 
