@@ -191,7 +191,7 @@ public class Pathfinder {
         int nextX = current_x + direction_x;
         int nextY = current_y + direction_y;
 
-        if (recursion_depth > 300) return null;
+        if (recursion_depth > 100) return null;
 
         if (nextX < 0 || !(nextX < map.map_width) || nextY < 0 || !(nextY < map.map_height)) return null;
         if (map.getNode(nextX, nextY).impassable) return null;
@@ -338,7 +338,7 @@ public class Pathfinder {
         while (!samePosition(open.peek(), this.end)) {
 //            System.out.println("loop iteration: " + count);
 //            System.out.println("size of queue: " + open.size());
-            if (count > 300) break;
+            if (count > 500) break;
 
             Node current = open.poll();
             if (current == null) break;
