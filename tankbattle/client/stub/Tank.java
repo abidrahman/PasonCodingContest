@@ -324,10 +324,11 @@ public class Tank {
             for (int i = 0; i < players.length(); i++) {
 
                 if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
-                    JSONArray enemy_tanks = players.getJSONObject(i).getJSONArray("tanks");
-                    for (int j = 0; j < enemy_tanks.length(); j++) {
+                    JSONArray our_tanks = players.getJSONObject(i).getJSONArray("tanks");
+                    for (int j = 0; j < our_tanks.length(); j++) {
+                        if (our_tanks.getJSONObject(j).getString("id").equals(tankID)) continue;
                         Vector coords = new Vector();
-                        JSONArray tank_coordinate = enemy_tanks.getJSONObject(j).getJSONArray("position");
+                        JSONArray tank_coordinate = our_tanks.getJSONObject(j).getJSONArray("position");
                         coords.x = tank_coordinate.getInt(0);
                         coords.y = tank_coordinate.getInt(1);
                         this.my_tank_coordinates.add(coords);
@@ -404,7 +405,11 @@ public class Tank {
         enemy.x = 0;
         enemy.y = 0;
 
-        for (Vector e : enemy_tank_coordinates) {
+        ArrayList<Vector> all_tanks = new ArrayList<>();
+        all_tanks.addAll(my_tank_coordinates);
+        all_tanks.addAll(enemy_tank_coordinates);
+
+        for (Vector e : my_tank_coordinates) {
             distance = distance(e, this_tank.position);
             if ((distance < closest_distance) && !doesCollide(this_tank.position, e)) {
                 closest_distance = distance;
@@ -486,7 +491,10 @@ public class Tank {
         double closest_enemy = find_closest_enemy();
 
         //Only shoot if aiming at target && within range && friendly NOT in the way
-        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
+//        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
+//            String fire_command = command.fire(tankID, gameInfo.getClientToken());
+//            commands.add(fire_command);
+        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100)) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
         } else if (closest_enemy < Math.PI && closest_enemy > 0) {

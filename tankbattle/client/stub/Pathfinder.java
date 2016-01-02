@@ -377,10 +377,10 @@ public class Pathfinder {
 
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
 
-        if (open.peek() == null) {
-            System.out.println("no valid path!");
-            return path;
-        }
+//        if (open.peek() == null) {
+//            System.out.println("no valid path!");
+//            return path;
+//        }
 
         // reconstruct path to end
         count = 0;
