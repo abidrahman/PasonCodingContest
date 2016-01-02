@@ -349,7 +349,7 @@ public class Pathfinder {
             for (int i = 0; i < neighbours.size(); i++) {
                 Node neighbour = neighbours.get(i);
                 if (neighbour.impassable) {
-//                    System.out.println("impassable");
+                    System.out.println("impassable");
                     continue;
                 }
                 double cost = current.cost + distance(current, neighbour);
