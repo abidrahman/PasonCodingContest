@@ -156,7 +156,6 @@ public class Pathfinder {
                 int x_prime = x + i;
                 int y_prime = y + j;
                 if (x_prime == x && y_prime == y) continue;
-//                if ((i == -1 && j == -1) || (i == 1 && j == 1) || (i == -1 && j == 1) || (i == 1 && j == -1)) continue;
                 if (x_prime < 0 || !(x_prime < map.map_width) || y_prime < 0 || !(y_prime < map.map_height)) continue;
                 if (closed.contains(map.getNode(x_prime, y_prime))) continue;
                 if (map.getNode(x_prime, y_prime).impassable) continue;
@@ -191,7 +190,7 @@ public class Pathfinder {
         int nextX = current_x + direction_x;
         int nextY = current_y + direction_y;
 
-        if (recursion_depth > 100) return null;
+        if (recursion_depth > 200) return null;
 
         if (nextX < 0 || !(nextX < map.map_width) || nextY < 0 || !(nextY < map.map_height)) return null;
         if (map.getNode(nextX, nextY).impassable) return null;
@@ -338,7 +337,7 @@ public class Pathfinder {
         while (!samePosition(open.peek(), this.end)) {
 //            System.out.println("loop iteration: " + count);
 //            System.out.println("size of queue: " + open.size());
-            if (count > 500) break;
+            if (count > 800) break;
 
             Node current = open.poll();
             if (current == null) break;
@@ -354,11 +353,11 @@ public class Pathfinder {
                     continue;
                 }
                 double cost = current.cost + distance(current, neighbour);
-                if (open.contains(neighbour) && (neighbour.cost - cost > 1) ) {
+                if (open.contains(neighbour) && (neighbour.cost - cost > 0.01) ) {
 //                    System.out.println("1");
                     open.remove(neighbour);
                 }
-                if (closed.contains(neighbour) && (neighbour.cost - cost > 1) ) {
+                if (closed.contains(neighbour) && (neighbour.cost - cost > 0.01) ) {
                     closed.remove(neighbour);
 //                    System.out.println("2");
                 }
@@ -377,10 +376,10 @@ public class Pathfinder {
 
         ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
 
-//        if (open.peek() == null) {
-//            System.out.println("no valid path!");
-//            return path;
-//        }
+        if (open.peek() == null) {
+            System.out.println("no valid path!");
+            return path;
+        }
 
         // reconstruct path to end
         count = 0;
