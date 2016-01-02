@@ -192,23 +192,40 @@ public class Tank {
             if (distance < 2.5) {
                 // calculate closest perpendicular direction
                 double perp_direction1 = p.direction + Math.PI / 2;
-                double perp_direction2 = p.direction - Math.PI / 2;
-                double difference = Math.min(this_tank.direction - perp_direction1, this_tank.direction - perp_direction2);
-                System.out.println(tankID + " " + this_tank.direction);
-                System.out.println(p.direction);
-                System.out.println(difference);
+                if (perp_direction1 < 0) perp_direction1 += Math.PI * 2;
+                if (perp_direction1 >= 2 * Math.PI) perp_direction1 -= Math.PI * 2;
+                double perp_direction2 = p.direction + Math.PI / 2;
+                if (perp_direction2 < 0) perp_direction2 += Math.PI * 2;
+                if (perp_direction2 >= 2 * Math.PI) perp_direction2 -= Math.PI * 2;
 
+                double difference;
                 String rotation;
-                if (difference > 0) rotation = CW;
-                else {
-                    rotation = CCW;
-                    difference = -difference;
+                if (this_tank.direction >= perp_direction1 && Math.abs(this_tank.direction - perp_direction1) <= Math.abs(this_tank.direction - perp_direction2)) {
+                    difference = Math.abs(this_tank.direction - perp_direction1);
+                    rotation = CW;
                 }
+                else if (this_tank.direction < perp_direction1 && Math.abs(this_tank.direction - perp_direction1) <= Math.abs(this_tank.direction - perp_direction2)) {
+                    difference = Math.abs(this_tank.direction - perp_direction1);
+                    rotation = CCW;
+                }
+                else if (this_tank.direction <= perp_direction2 && Math.abs(this_tank.direction - perp_direction2) <= Math.abs(this_tank.direction - perp_direction1)) {
+                    difference = Math.abs(this_tank.direction - perp_direction2);
+                    rotation = CCW;
+                }
+                else {
+                    difference = Math.abs(this_tank.direction - perp_direction2);
+                    rotation = CW;
+                }
+//                else if (this_tank.direction > perp_direction2 && Math.abs(this_tank.direction - perp_direction2) <= Math.abs(this_tank.direction - perp_direction1)) {
+//                    difference = Math.abs(this_tank.direction - perp_direction2);
+//                    rotation = CW;
+//                }
+
 
                 String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
                 commands.add(rotate_tracks_command);
 
-                String moveCommand = command.move(tankID, "FWD", 20, gameInfo.getClientToken());
+                String moveCommand = command.move(tankID, "REV", 20, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
 
