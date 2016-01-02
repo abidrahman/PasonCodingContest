@@ -94,8 +94,8 @@ public class Pathfinder {
                 int width = bounds.getJSONArray("size").getInt(0);
                 int height = bounds.getJSONArray("size").getInt(1);
                 System.out.println("corner_x: " + corner_x + ", corner_y: " + corner_y + ", width: " + width + ", height: " + height);
-                for (int y = -2; y < height+2; y++) {
-                    for (int x = -2; x < width+2; x++) {
+                for (int y = -2; y <= height+2; y++) {
+                    for (int x = -2; x <= width+2; x++) {
                         if (corner_x + x < 0 || !(corner_x + x < this.map.map_width) || corner_y + y < 0 || !(corner_y + y < this.map.map_height)) continue;
                         Node n = this.map.getNode(corner_x + x, corner_y + y);
                         n.impassable = true;
@@ -150,8 +150,8 @@ public class Pathfinder {
         ArrayList<Node> neighbours = new ArrayList<Node>();
         int x = (int)Math.round(n.position.x);
         int y = (int)Math.round(n.position.y);
-        for (int i = -3; i <= 3; i++) {
-            for (int j = -3; j <= 3; j++) {
+        for (int i = -4; i <= 4; i++) {
+            for (int j = -4; j <= 4; j++) {
                 int x_prime = x + i;
                 int y_prime = y + j;
                 if (x_prime == x && y_prime == y) continue;
@@ -368,28 +368,6 @@ public class Pathfinder {
                 }
 
             }
-//            for (Node neighbour : neighbours) {
-//                if (neighbour.impassable) {
-////                    System.out.println("impassable");
-//                    continue;
-//                }
-//                double cost = current.cost + distance(current, neighbour);
-//                if (open.contains(neighbour) && cost < neighbour.cost) {
-////                    System.out.println("1");
-//                    open.remove(neighbour);
-//                }
-//                else if (closed.contains(neighbour) && cost < neighbour.cost) {
-//                    closed.remove(neighbour);
-////                    System.out.println("2");
-//                }
-//                else {
-////                    System.out.println("3");
-//                    neighbour.cost = cost;
-//                    neighbour.parent = current;
-//                    open.add(neighbour);
-//                }
-//            }
-//            System.out.println("end of loop iteration: " + count);
             ++count;
         }
 
