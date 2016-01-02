@@ -124,6 +124,7 @@ public class Tank {
         if (state == State.HUNTING) {
             count++;
             System.out.println(count);
+            commands.addAll(attack());
             if (count % 5 == 1) {
                 String moveCommand = command.move(tankID, "FWD", 15, gameInfo.getClientToken());
                 commands.add(moveCommand);
