@@ -98,6 +98,7 @@ public class Tank {
 
         double distance = 0;
         double closest_d = 1000;
+        Vector closest = new Vector();
         boolean found_enemy = false;
         for (Vector e : enemy_tank_coordinates) {
             distance = distance(e, this_tank.position);
@@ -227,19 +228,20 @@ public class Tank {
                     String rotate_tracks_command = command.rotate(tankID, rotation, difference, gameInfo.getClientToken());
                     commands.add(rotate_tracks_command);
 
-                    break;
                 }
 
                 String dodgeDirection = FWD;
 
                 Vector dodge_end = new Vector();
-                dodge_end.x = this_tank.position.x + dodge_distance * Math.cos(this_tank.direction);
-                dodge_end.y = this_tank.position.y + dodge_distance * Math.sin(this_tank.direction);
+                dodge_end.x = this_tank.position.x + 10 * Math.cos(this_tank.direction);
+                dodge_end.y = this_tank.position.y + 10 * Math.sin(this_tank.direction);
 
                 if (doesCollide(this_tank.position, dodge_end)) dodgeDirection = REV;
 
                 String moveCommand = command.move(tankID, dodgeDirection, dodge_distance, gameInfo.getClientToken());
                 commands.add(moveCommand);
+
+                break;
             }
         }
 
@@ -325,7 +327,6 @@ public class Tank {
                 if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
                     JSONArray our_tanks = players.getJSONObject(i).getJSONArray("tanks");
                     for (int j = 0; j < our_tanks.length(); j++) {
-                        if (our_tanks.getJSONObject(j).getString("id").equals(tankID)) continue;
                         Vector coords = new Vector();
                         JSONArray tank_coordinate = our_tanks.getJSONObject(j).getJSONArray("position");
                         coords.x = tank_coordinate.getInt(0);
@@ -404,11 +405,7 @@ public class Tank {
         enemy.x = 0;
         enemy.y = 0;
 
-        ArrayList<Vector> all_tanks = new ArrayList<>();
-        all_tanks.addAll(my_tank_coordinates);
-        all_tanks.addAll(enemy_tank_coordinates);
-
-        for (Vector e : all_tanks) {
+        for (Vector e : enemy_tank_coordinates) {
             distance = distance(e, this_tank.position);
             if ((distance < closest_distance) && !doesCollide(this_tank.position, e)) {
                 closest_distance = distance;
@@ -490,10 +487,7 @@ public class Tank {
         double closest_enemy = find_closest_enemy();
 
         //Only shoot if aiming at target && within range && friendly NOT in the way
-//        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
-//            String fire_command = command.fire(tankID, gameInfo.getClientToken());
-//            commands.add(fire_command);
-        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100)) {
+        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
         } else if (closest_enemy < Math.PI && closest_enemy > 0) {
