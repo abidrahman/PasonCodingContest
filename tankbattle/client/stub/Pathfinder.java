@@ -94,8 +94,8 @@ public class Pathfinder {
                 int width = bounds.getJSONArray("size").getInt(0);
                 int height = bounds.getJSONArray("size").getInt(1);
                 System.out.println("corner_x: " + corner_x + ", corner_y: " + corner_y + ", width: " + width + ", height: " + height);
-                for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < width; x++) {
+                for (int y = -2; y < height+2; y++) {
+                    for (int x = -2; x < width+2; x++) {
                         if (corner_x + x < 0 || !(corner_x + x < this.map.map_width) || corner_y + y < 0 || !(corner_y + y < this.map.map_height)) continue;
                         Node n = this.map.getNode(corner_x + x, corner_y + y);
                         n.impassable = true;
@@ -150,8 +150,8 @@ public class Pathfinder {
         ArrayList<Node> neighbours = new ArrayList<Node>();
         int x = (int)Math.round(n.position.x);
         int y = (int)Math.round(n.position.y);
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
+        for (int i = -3; i <= 3; i++) {
+            for (int j = -3; j <= 3; j++) {
                 int x_prime = x + i;
                 int y_prime = y + j;
                 if (x_prime == x && y_prime == y) continue;
@@ -165,13 +165,19 @@ public class Pathfinder {
         return neighbours;
     }
 
+    private int clamp(int num, int lower, int upper) {
+        if (num < lower) num = lower;
+        else if (num > upper) num = upper;
+        return num;
+    }
+
     private ArrayList<Node> findSuccessors(Node current) {
         ArrayList<Node> successors = new ArrayList<>();
         ArrayList<Node> neighbours = findNeighbours(current);
 
         for (Node neighbour : neighbours) {
-            int direction_x = (int)Math.round(neighbour.position.x - current.position.x);
-            int direction_y = (int)Math.round(neighbour.position.y - current.position.y);
+            int direction_x = clamp((int)Math.round(neighbour.position.x - current.position.x), -1, 1);
+            int direction_y = clamp((int)Math.round(neighbour.position.y - current.position.y), -1, 1);
 
             Node jumpPoint = jump((int)Math.round(current.position.x), (int)Math.round(current.position.y), direction_x, direction_y, 0);
             if (jumpPoint != null) successors.add(jumpPoint);
