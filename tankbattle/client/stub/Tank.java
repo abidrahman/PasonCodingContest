@@ -136,7 +136,7 @@ public class Tank {
             }
             if (count % 15 == 1) {
                 for (Vector friend : my_tank_coordinates) {
-                    if (friend.x != this_tank.position.x && friend.y != this_tank.position.y && distance(friend, this_tank.position) < 5) {
+                    if (Math.round(friend.x) != Math.round(this_tank.position.x) && Math.round(friend.y) != Math.round(this_tank.position.y) && distance(friend, this_tank.position) < 5) {
                         String moveCommand = command.move(tankID, "REV", 5, gameInfo.getClientToken());
                         commands.add(moveCommand);
                         break;
