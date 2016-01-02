@@ -134,15 +134,6 @@ public class Tank {
             if (count % 20 == 1) {
                 commands.addAll(huntEnemy());
             }
-            if (count % 15 == 1) {
-                for (Vector friend : my_tank_coordinates) {
-                    if (Math.round(friend.x) != Math.round(this_tank.position.x) && Math.round(friend.y) != Math.round(this_tank.position.y) && distance(friend, this_tank.position) < 5) {
-                        String moveCommand = command.move(tankID, "REV", 5, gameInfo.getClientToken());
-                        commands.add(moveCommand);
-                        break;
-                    }
-                }
-            }
         }
 
         return commands;
@@ -185,14 +176,12 @@ public class Tank {
         }
     }
 
-    private boolean isDodging = false;
-    private boolean wasDodging = false;
-    private String dodgeDirection = FWD;
-
-    private ArrayList<String> dodgeProjectiles() {
+    private ArrayList<String> dodgeProjectiles() throws JSONException {
         ArrayList<String> commands = new ArrayList<String>();
 
         // check if any projectiles are headed towards this tank
+
+        final int dodge_distance = 5;
 
         for (Projectile p : projectiles) {
 
@@ -207,16 +196,6 @@ public class Tank {
             distance = Math.abs(a*this_tank.position.x + b*this_tank.position.y + c) / Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 
             if (distance < 2.5) {
-
-                String moveCommand = command.move(tankID, dodgeDirection, 3, gameInfo.getClientToken());
-                commands.add(moveCommand);
-
-                isDodging = true;
-                if (isDodging && !wasDodging) {
-                    System.out.println("reversing direction");
-                    if (dodgeDirection.equals(FWD)) dodgeDirection = REV;
-                    if (dodgeDirection.equals(REV)) dodgeDirection = FWD;
-                }
 
                 // calculate closest perpendicular direction
                 double perp_direction1 = p.direction + Math.PI / 2;
@@ -251,13 +230,19 @@ public class Tank {
 
                     break;
                 }
-            }
-            else {
-                isDodging = false;
+
+                String dodgeDirection = FWD;
+
+                Vector dodge_end = new Vector();
+                dodge_end.x = this_tank.position.x + dodge_distance * Math.cos(this_tank.direction);
+                dodge_end.y = this_tank.position.y + dodge_distance * Math.sin(this_tank.direction);
+
+                if (doesCollide(this_tank.position, dodge_end)) dodgeDirection = REV;
+
+                String moveCommand = command.move(tankID, dodgeDirection, dodge_distance, gameInfo.getClientToken());
+                commands.add(moveCommand);
             }
         }
-
-        wasDodging = isDodging;
 
         return commands;
     }

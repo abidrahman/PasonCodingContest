@@ -147,12 +147,12 @@ public class Pathfinder {
         return ((Math.abs(n1.position.x - n2.position.x) < 0.1) && (Math.abs(n1.position.y - n2.position.y) < 0.1));
     }
 
-    private ArrayList<Node> findNeighbours(Node n) {
+    private ArrayList<Node> findNeighbours(Node n, int radius) {
         ArrayList<Node> neighbours = new ArrayList<Node>();
         int x = (int)Math.round(n.position.x);
         int y = (int)Math.round(n.position.y);
-        for (int i = -2; i <= 2; i++) {
-            for (int j = -2; j <= 2; j++) {
+        for (int i = -radius; i <= radius; i++) {
+            for (int j = -radius; j <= radius; j++) {
                 int x_prime = x + i;
                 int y_prime = y + j;
                 if (x_prime == x && y_prime == y) continue;
@@ -174,7 +174,7 @@ public class Pathfinder {
 
     private ArrayList<Node> findSuccessors(Node current) {
         ArrayList<Node> successors = new ArrayList<>();
-        ArrayList<Node> neighbours = findNeighbours(current);
+        ArrayList<Node> neighbours = findNeighbours(current, 2);
 
         for (Node neighbour : neighbours) {
             int direction_x = clamp((int) Math.round(neighbour.position.x - current.position.x), -1, 1);
@@ -183,7 +183,7 @@ public class Pathfinder {
             Node jumpPoint = jump((int)Math.round(current.position.x), (int)Math.round(current.position.y), direction_x, direction_y, 0);
             if (jumpPoint != null) successors.add(jumpPoint);
         }
-
+        if (successors.size() == 0) return neighbours;
         return successors;
     }
 
