@@ -173,13 +173,15 @@ public class Pathfinder {
             int direction_x = (int)Math.round(neighbour.position.x - current.position.x);
             int direction_y = (int)Math.round(neighbour.position.y - current.position.y);
 
-            Node jumpPoint = jump((int)Math.round(current.position.x), (int)Math.round(current.position.y), direction_x, direction_y);
+            Node jumpPoint = jump((int)Math.round(current.position.x), (int)Math.round(current.position.y), direction_x, direction_y, 0);
             if (jumpPoint != null) successors.add(jumpPoint);
         }
         return successors;
     }
 
-    private Node jump(int current_x, int current_y, int direction_x, int direction_y) {
+    private Node jump(int current_x, int current_y, int direction_x, int direction_y, int recursion_depth) {
+        if (recursion_depth > 500) return null;
+
         int nextX = current_x + direction_x;
         int nextY = current_y + direction_y;
 
@@ -236,8 +238,8 @@ public class Pathfinder {
                     }
                 }
             }
-            if (jump(nextX, nextY, direction_x, 0) != null ||
-                    jump(nextX, nextY, 0, direction_y) != null)
+            if (jump(nextX, nextY, direction_x, 0, ++recursion_depth) != null ||
+                    jump(nextX, nextY, 0, direction_y, ++recursion_depth) != null)
             {
                 return map.getNode(nextX, nextY);
             }
@@ -296,7 +298,7 @@ public class Pathfinder {
                 }
             }
         }
-        return jump(nextX, nextY, direction_x, direction_y);
+        return jump(nextX, nextY, direction_x, direction_y, ++recursion_depth);
     }
 
     public ArrayList<Tank.Vector> findPath(Tank.Vector start, Tank.Vector end) {

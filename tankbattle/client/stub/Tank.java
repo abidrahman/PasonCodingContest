@@ -457,7 +457,11 @@ public class Tank {
             String rotate_command = command.rotateTurret(tankID, CCW, 2*Math.PI - closest_enemy, gameInfo.getClientToken());
             commands.add(rotate_command);
         }
-                    
+
+        if (friendly_in_the_way(closest_enemy)) {
+            String stop_fire = command.stop(tankID, "FIRE", gameInfo.getClientToken());
+            commands.add(stop_fire);
+        }
 
         return commands;
     }
