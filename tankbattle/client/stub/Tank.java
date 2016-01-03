@@ -26,7 +26,7 @@ public class Tank {
     private double closest_distance;
     ArrayList<Vector> my_tank_coordinates = new ArrayList<>();
     ArrayList<Vector> enemy_tank_coordinates = new ArrayList<>();
-    private List<Projectile> projectiles = new ArrayList<Projectile>();
+    private List<Projectile> projectiles = new ArrayList<>();
     public TankData this_tank = new TankData();
 
     private boolean last_dodged_forward = false;
@@ -96,9 +96,8 @@ public class Tank {
     public ArrayList<String> strategy() throws JSONException {
         ArrayList<String> commands = new ArrayList<>();
 
-        double distance = 0;
+        double distance;
         double closest_d = 1000;
-        Vector closest = new Vector();
         boolean found_enemy = false;
         for (Vector e : enemy_tank_coordinates) {
             distance = distance(e, this_tank.position);
@@ -108,30 +107,31 @@ public class Tank {
             }
         }
 
-        if (found_enemy && state == State.HUNTING) {
-            String stopMove = command.stop(tankID, "MOVE", gameInfo.getClientToken());
-            commands.add(stopMove);
+        if (found_enemy)  {
+            if (state == State.HUNTING) {
+                String stopMove = command.stop(tankID, "MOVE", gameInfo.getClientToken());
+                commands.add(stopMove);
+            }
             state = State.DOGFIGHT;
-        }
-        if (found_enemy) state = State.DOGFIGHT;
-        if (!found_enemy)
+        } else {
             state = State.HUNTING;
+        }
 
         if (state == State.DOGFIGHT) {
             commands.addAll(dodgeProjectiles());
-            commands.addAll(attack());
+            commands.addAll(aim());
+            commands.addAll(fire());
         }
-
 
         if (state == State.HUNTING) {
             count++;
             System.out.println(count);
-            commands.addAll(attack());
+            commands.addAll(aim());
             if (count % 5 == 1) {
-                String moveCommand = command.move(tankID, "FWD", 15, gameInfo.getClientToken());
+                String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
-            if (count % 20 == 1) {
+            if (count % 15 == 1) {
                 commands.addAll(huntEnemy());
             }
         }
@@ -177,7 +177,7 @@ public class Tank {
     }
 
     private ArrayList<String> dodgeProjectiles() throws JSONException {
-        ArrayList<String> commands = new ArrayList<String>();
+        ArrayList<String> commands = new ArrayList<>();
 
         // check if any projectiles are headed towards this tank
 
@@ -250,9 +250,9 @@ public class Tank {
 
     private ArrayList<String> huntEnemy() {
         // Move towards the closest enemy.
-        ArrayList<String> commands = new ArrayList<String>();
+        ArrayList<String> commands = new ArrayList<>();
 
-        double distance = 0;
+        double distance;
         double closest_d = 1000;
         Vector closest = new Vector();
         for (Vector e : enemy_tank_coordinates) {
@@ -477,25 +477,28 @@ public class Tank {
         return false;
     }
 
-    public ArrayList<String> attack() throws JSONException {
-        ArrayList<String> commands = new ArrayList<String>();
+    public ArrayList<String> aim() throws JSONException {
+        ArrayList<String> commands = new ArrayList<>();
 
-        // calculate the necessary attack (turret rotate, fire)
-        // return the Strings needed to issue the commands
-
-        //This is the difference between current angle and needed angle going CW
         double closest_enemy = find_closest_enemy();
-
-        //Only shoot if aiming at target && within range && friendly NOT in the way
-        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
-            String fire_command = command.fire(tankID, gameInfo.getClientToken());
-            commands.add(fire_command);
-        } else if (closest_enemy < Math.PI && closest_enemy > 0) {
+        if (closest_enemy < Math.PI && closest_enemy > 0) {
             String rotate_command = command.rotateTurret(tankID, CW, closest_enemy, gameInfo.getClientToken());
             commands.add(rotate_command);
         } else if (closest_enemy >= Math.PI && closest_enemy < 2*Math.PI) {
             String rotate_command = command.rotateTurret(tankID, CCW, 2*Math.PI - closest_enemy, gameInfo.getClientToken());
             commands.add(rotate_command);
+        }
+
+        return commands;
+    }
+
+    public ArrayList<String> fire() throws JSONException {
+        ArrayList<String> commands = new ArrayList<>();
+
+        double closest_enemy = find_closest_enemy();
+        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
+            String fire_command = command.fire(tankID, gameInfo.getClientToken());
+            commands.add(fire_command);
         }
 
         if (friendly_in_the_way(closest_enemy)) {
@@ -505,5 +508,4 @@ public class Tank {
 
         return commands;
     }
-
 }
