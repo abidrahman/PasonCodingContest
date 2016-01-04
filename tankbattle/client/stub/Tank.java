@@ -183,10 +183,10 @@ public class Tank {
             commands.addAll(aim());
             commands.addAll(dodgeProjectiles());
             if (count % 5 == 1) {
-                String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
+                String moveCommand = command.move(tankID, "FWD", 5, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
-            if (count % 15 == 1) {
+            if (count % 10 == 1) {
                 commands.addAll(huntEnemy());
             }
         }
@@ -294,7 +294,7 @@ public class Tank {
 
         for (Projectile p : projectiles) {
 
-            if (distance(this_tank.position, p.position) > p.range) continue;
+            if (distance(this_tank.position, p.position) > p.range && !doesCollide(this_tank.position,p.position)) continue;
 
             double distance;
 
