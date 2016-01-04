@@ -29,8 +29,6 @@ public class Tank {
     private List<Projectile> projectiles = new ArrayList<>();
     public TankData this_tank = new TankData();
 
-    private boolean last_dodged_forward = false;
-
     int count;
 
     private enum State {
@@ -65,15 +63,10 @@ public class Tank {
 
     }
 
-    public void printID() {
-        System.out.println(this.tankID);
-    }
-
     public void update(JSONObject gameState) throws JSONException {
 
         this.gameState = gameState;
         this.updateProjectiles();
-        this.update_enemy();
         this.update_tanks();
         JSONArray players = gameState.getJSONArray("players");
         for (int i = 0; i < players.length(); i++) {
@@ -88,6 +81,67 @@ public class Tank {
                         this_tank.direction = tank.getDouble("tracks");
                         this_tank.turret = tank.getDouble("turret");
                     }
+                }
+            }
+        }
+    }
+
+    private void update_tanks() throws JSONException {
+
+        this.my_tank_coordinates.clear();
+        this.enemy_tank_coordinates.clear();
+
+        if (gameState.has("players")) {
+            JSONArray players = gameState.getJSONArray("players");
+            for (int i = 0; i < players.length(); i++) {
+
+                if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
+                    JSONArray our_tanks = players.getJSONObject(i).getJSONArray("tanks");
+                    for (int j = 0; j < our_tanks.length(); j++) {
+                        Vector coords = new Vector();
+                        JSONArray tank_coordinate = our_tanks.getJSONObject(j).getJSONArray("position");
+                        coords.x = tank_coordinate.getInt(0);
+                        coords.y = tank_coordinate.getInt(1);
+                        this.my_tank_coordinates.add(coords);
+                    }
+                } else {
+                    JSONArray enemy_tanks = players.getJSONObject(i).getJSONArray("tanks");
+                    for (int j = 0; j < enemy_tanks.length(); j++) {
+                        Vector coords = new Vector();
+                        JSONArray tank_coordinate = enemy_tanks.getJSONObject(j).getJSONArray("position");
+                        coords.x = tank_coordinate.getInt(0);
+                        coords.y = tank_coordinate.getInt(1);
+                        this.enemy_tank_coordinates.add(coords);
+                    }
+                }
+            }
+        }
+    }
+
+    private void updateProjectiles() throws JSONException {
+
+        this.projectiles.clear(); // clear old projectiles because I am lazy to optimize updating
+
+        JSONArray players = gameState.getJSONArray("players");
+        for (int i = 0; i < players.length(); i++) {
+            JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
+            for (int j = 0; j < tanks.length(); j++) {
+                if (tanks.getJSONObject(j).getString("id").equals(tankID)) continue; // do not dodge our own projectiles
+                JSONArray tank_projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
+                for (int k = 0; k < tank_projectiles.length(); k++) {
+
+                    //create projectile object and update with new info
+                    JSONObject projectile = tank_projectiles.getJSONObject(k);
+                    Projectile p = new Projectile();
+                    p.id = projectile.getString("id");
+                    p.position.x = projectile.getJSONArray("position").getDouble(0);
+                    p.position.y = projectile.getJSONArray("position").getDouble(1);
+                    p.direction = projectile.getDouble("direction");
+                    p.speed = projectile.getInt("speed");
+                    p.range = projectile.getDouble("range");
+
+                    // add the projectile
+                    this.projectiles.add(p);
                 }
             }
         }
@@ -127,6 +181,7 @@ public class Tank {
             count++;
             System.out.println(count);
             commands.addAll(aim());
+            commands.addAll(dodgeProjectiles());
             if (count % 5 == 1) {
                 String moveCommand = command.move(tankID, "FWD", 10, gameInfo.getClientToken());
                 commands.add(moveCommand);
@@ -139,41 +194,95 @@ public class Tank {
         return commands;
     }
 
-    private double distance(Vector v1, Vector v2) {
-        return Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2));
-    }
+    private boolean doesCollide(Vector start, Vector end) throws JSONException {
+        //Returns true if projectile collides with an obstacle before the target
 
-    private double dotProduct(Vector v1, Vector v2) {
-        return (v1.x * v2.x) + (v1.y * v2.y);
-    }
+        if (gameState.has("map")) {
+            JSONObject map = gameState.getJSONObject("map");
+            JSONArray terrains = map.getJSONArray("terrain");
+            for (int i = 0; i < terrains.length(); i++) {
 
-    private void updateProjectiles() throws JSONException {
+                JSONObject obstacle = terrains.getJSONObject(i);
+                if (obstacle.getString("type").equals("SOLID")) {
 
-        this.projectiles.clear(); // clear old projectiles because I am lazy to optimize updating
+                    JSONObject bounds = obstacle.getJSONObject("boundingBox");
+                    Vector obs_botleft = new Vector();
+                    Vector obs_topright = new Vector();
+                    Vector obs_topleft = new Vector();
+                    Vector obs_botright = new Vector();
+                    obs_botleft.x = (double)bounds.getJSONArray("corner").getInt(0);
+                    obs_botleft.y = (double)bounds.getJSONArray("corner").getInt(1);
+                    obs_topright.x = obs_botleft.x + (double)bounds.getJSONArray("size").getInt(0);
+                    obs_topright.y = obs_botleft.y + (double)bounds.getJSONArray("size").getInt(1);
+                    obs_botright.x = obs_topright.x;
+                    obs_botright.y = obs_botleft.y;
+                    obs_topleft.x = obs_botleft.x;
+                    obs_topleft.y = obs_topright.y;
 
-        JSONArray players = gameState.getJSONArray("players");
-        for (int i = 0; i < players.length(); i++) {
-            JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
-            for (int j = 0; j < tanks.length(); j++) {
-                if (tanks.getJSONObject(j).getString("id").equals(tankID)) continue; // do not dodge our own projectiles
-                JSONArray tank_projectiles = tanks.getJSONObject(j).getJSONArray("projectiles");
-                for (int k = 0; k < tank_projectiles.length(); k++) {
-
-                    //create projectile object and update with new info
-                    JSONObject projectile = tank_projectiles.getJSONObject(k);
-                    Projectile p = new Projectile();
-                    p.id = projectile.getString("id");
-                    p.position.x = projectile.getJSONArray("position").getDouble(0);
-                    p.position.y = projectile.getJSONArray("position").getDouble(1);
-                    p.direction = projectile.getDouble("direction");
-                    p.speed = projectile.getInt("speed");
-                    p.range = projectile.getDouble("range");
-
-                    // add the projectile
-                    this.projectiles.add(p);
+                    if (Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_botleft.x,obs_botleft.y,obs_topleft.x,obs_topleft.y) ||
+                            Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_topleft.x,obs_topleft.y,obs_topright.x,obs_topright.y) ||
+                            Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_topright.x,obs_topright.y,obs_botright.x,obs_botright.y) ||
+                            Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_botright.x,obs_botright.y,obs_botleft.x,obs_botleft.y)) {
+                        return true;
+                    }
                 }
             }
         }
+        //If no collision return false
+        return false;
+    }
+
+    private double find_closest_enemy() throws JSONException {
+
+        double distance;
+        double angle_difference;
+        closest_distance = 1280;
+        enemy.x = 0;
+        enemy.y = 0;
+
+        for (Vector e : enemy_tank_coordinates) {
+            distance = distance(e, this_tank.position);
+            if ((distance < closest_distance) && !doesCollide(this_tank.position, e)) {
+                closest_distance = distance;
+                enemy.x = e.x;
+                enemy.y = e.y;
+
+            }
+        }
+
+        //Calculate closest enemy's position relative to ours.
+        double Ox = enemy.x - this_tank.position.x;
+        double Oy = enemy.y - this_tank.position.y;
+
+        if (Ox == 0.0) Ox = 0.00001;
+        double current_angle = this_tank.turret;
+        double angle_needed = Math.atan2(Oy, Ox);
+        if (angle_needed < 0) angle_needed += 2 * Math.PI;
+
+        if (current_angle > angle_needed) angle_difference = current_angle - angle_needed;
+        else angle_difference = 2*Math.PI - (angle_needed - current_angle);
+
+        return angle_difference;
+    }
+
+    private boolean friendly_in_the_way(double closest_enemy_angle) throws JSONException {
+
+        //Calculate if there is a friendly in the way before the enemy, if so don't shoot.
+        for (Vector m : my_tank_coordinates) {
+
+            double Mx = m.x - this_tank.position.x;
+            double My = m.y - this_tank.position.y;
+            if (Mx == 0.0) Mx = 0.0001;
+
+            double avoid_angle = Math.atan2(My, Mx);
+            if (avoid_angle < 0) avoid_angle += 2 * Math.PI;
+
+            if ((avoid_angle < (closest_enemy_angle + 0.15) && avoid_angle > (closest_enemy_angle - 0.15)) && (closest_distance > distance(this_tank.position,m) && !doesCollide(this_tank.position, m))) {
+                return true;
+            }
+
+        }
+        return false;
     }
 
     private ArrayList<String> dodgeProjectiles() throws JSONException {
@@ -316,166 +425,7 @@ public class Tank {
         return commands;
     }
 
-    private void update_tanks() throws JSONException {
-
-        this.my_tank_coordinates.clear();
-
-        if (gameState.has("players")) {
-            JSONArray players = gameState.getJSONArray("players");
-            for (int i = 0; i < players.length(); i++) {
-
-                if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
-                    JSONArray our_tanks = players.getJSONObject(i).getJSONArray("tanks");
-                    for (int j = 0; j < our_tanks.length(); j++) {
-                        Vector coords = new Vector();
-                        JSONArray tank_coordinate = our_tanks.getJSONObject(j).getJSONArray("position");
-                        coords.x = tank_coordinate.getInt(0);
-                        coords.y = tank_coordinate.getInt(1);
-                        this.my_tank_coordinates.add(coords);
-                    }
-                }
-            }
-        }
-    }
-
-    private void update_enemy() throws JSONException {
-
-        this.enemy_tank_coordinates.clear();
-
-        if (gameState.has("players")) {
-            JSONArray players = gameState.getJSONArray("players");
-            for (int i = 0; i < players.length(); i++) {
-
-                if (!players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
-                    JSONArray enemy_tanks = players.getJSONObject(i).getJSONArray("tanks");
-                    for (int j = 0; j < enemy_tanks.length(); j++) {
-                        Vector coords = new Vector();
-                        JSONArray tank_coordinate = enemy_tanks.getJSONObject(j).getJSONArray("position");
-                        coords.x = tank_coordinate.getInt(0);
-                        coords.y = tank_coordinate.getInt(1);
-                        this.enemy_tank_coordinates.add(coords);
-                    }
-                }
-            }
-        }
-    }
-
-    private boolean doesCollide(Vector start, Vector end) throws JSONException {
-        //Returns true if projectile collides with an obstacle before the target
-
-        if (gameState.has("map")) {
-            JSONObject map = gameState.getJSONObject("map");
-            JSONArray terrains = map.getJSONArray("terrain");
-            for (int i = 0; i < terrains.length(); i++) {
-
-                JSONObject obstacle = terrains.getJSONObject(i);
-                if (obstacle.getString("type").equals("SOLID")) {
-
-                    JSONObject bounds = obstacle.getJSONObject("boundingBox");
-                    Vector obs_botleft = new Vector();
-                    Vector obs_topright = new Vector();
-                    Vector obs_topleft = new Vector();
-                    Vector obs_botright = new Vector();
-                    obs_botleft.x = (double)bounds.getJSONArray("corner").getInt(0);
-                    obs_botleft.y = (double)bounds.getJSONArray("corner").getInt(1);
-                    obs_topright.x = obs_botleft.x + (double)bounds.getJSONArray("size").getInt(0);
-                    obs_topright.y = obs_botleft.y + (double)bounds.getJSONArray("size").getInt(1);
-                    obs_botright.x = obs_topright.x;
-                    obs_botright.y = obs_botleft.y;
-                    obs_topleft.x = obs_botleft.x;
-                    obs_topleft.y = obs_topright.y;
-
-                    if (Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_botleft.x,obs_botleft.y,obs_topleft.x,obs_topleft.y) ||
-                            Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_topleft.x,obs_topleft.y,obs_topright.x,obs_topright.y) ||
-                            Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_topright.x,obs_topright.y,obs_botright.x,obs_botright.y) ||
-                            Line2D.linesIntersect(start.x,start.y,end.x,end.y,obs_botright.x,obs_botright.y,obs_botleft.x,obs_botleft.y)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        //If no collision return false
-        return false;
-    }
-
-    private double find_closest_enemy() throws JSONException {
-
-        double distance;
-        closest_distance = 1280;
-        enemy.x = 0;
-        enemy.y = 0;
-
-        for (Vector e : enemy_tank_coordinates) {
-            distance = distance(e, this_tank.position);
-            if ((distance < closest_distance) && !doesCollide(this_tank.position, e)) {
-                closest_distance = distance;
-                enemy.x = e.x;
-                enemy.y = e.y;
-
-            }
-        }
-
-        //Calculate closest enemy's position relative to ours.
-        double Ox = enemy.x - this_tank.position.x;
-        double Oy = enemy.y - this_tank.position.y;
-
-        if (Ox == 0.0) Ox = 0.00001;
-        double angle_needed = Math.atan(Oy/Ox);
-        double current_angle = this_tank.turret;
-
-        double angle_difference;
-
-        //Calculate angle difference depending on quadrant enemy is in.
-        //angle_difference is the angle (in rad) between the current turret angle and needed turret angle
-        //counting CLOCKWISE FROM turret angle TO needed turret angle.
-
-        //Top-Right QUAD
-        //Nothing changes.
-
-        //Top-Left QUAD & Bottom-left QUAD
-        if ((angle_needed < 0 && Oy > 0) || (angle_needed >= 0 && Oy <= 0 && Ox < 0)) angle_needed = Math.PI + angle_needed;
-
-        //Bottom-Right QUAD
-        if (angle_needed < 0 && Oy < 0) angle_needed = 2*Math.PI + angle_needed;
-
-
-        if (current_angle > angle_needed) angle_difference = current_angle - angle_needed;
-        else angle_difference = 2*Math.PI - (angle_needed - current_angle);
-
-        return angle_difference;
-    }
-
-    private boolean friendly_in_the_way(double closest_enemy_angle) throws JSONException {
-
-        //Calculate if there is a friendly in the way before the enemy, if so don't shoot.
-        for (Vector m : my_tank_coordinates) {
-
-            double Mx = m.x - this_tank.position.x;
-            double My = m.y - this_tank.position.y;
-            if (Mx == 0.0) Mx = 0.0001;
-            /*
-            double avoid_angle = Math.atan(My/Mx);
-            //Top-Left QUAD & Bottom-left QUAD
-            if ((avoid_angle < 0 && My > 0) || (avoid_angle > 0 && My <= 0 && Mx < 0)) avoid_angle = Math.PI + avoid_angle;
-            //Bottom-Right QUAD
-            if (avoid_angle < 0 && My < 0) avoid_angle = 2*Math.PI + avoid_angle;
-            if ((avoid_angle < (closest_enemy_angle + 0.1) && avoid_angle > (closest_enemy_angle - 0.1)) && (closest_distance > distance(this_tank.position,m))) {
-                return true;
-            }
-            */
-
-            double avoid_angle = Math.atan2(My, Mx);
-            if (avoid_angle < 0) avoid_angle += 2 * Math.PI;
-
-            if ((avoid_angle < (closest_enemy_angle + 0.15) && avoid_angle > (closest_enemy_angle - 0.15)) && (closest_distance > distance(this_tank.position,m) && !doesCollide(this_tank.position, m))) {
-                return true;
-            }
-
-        }
-        return false;
-    }
-
-    public ArrayList<String> aim() throws JSONException {
+    private ArrayList<String> aim() throws JSONException {
         ArrayList<String> commands = new ArrayList<>();
 
         double closest_enemy = find_closest_enemy();
@@ -490,7 +440,7 @@ public class Tank {
         return commands;
     }
 
-    public ArrayList<String> fire() throws JSONException {
+    private ArrayList<String> fire() throws JSONException {
         ArrayList<String> commands = new ArrayList<>();
 
         double closest_enemy = find_closest_enemy();
@@ -505,5 +455,10 @@ public class Tank {
         }
 
         return commands;
+    }
+
+    //MATHEMATIX
+    private double distance(Vector v1, Vector v2) {
+        return Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2));
     }
 }
