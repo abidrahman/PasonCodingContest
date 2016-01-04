@@ -162,10 +162,10 @@ public class Tank {
         }
 
         if (found_enemy)  {
-            if (state == State.HUNTING) {
+            /*if (state == State.HUNTING) {
                 String stopMove = command.stop(tankID, "MOVE", gameInfo.getClientToken());
                 commands.add(stopMove);
-            }
+            }*/
             state = State.DOGFIGHT;
         } else {
             state = State.HUNTING;
@@ -182,11 +182,11 @@ public class Tank {
             System.out.println(count);
             commands.addAll(aim());
             commands.addAll(dodgeProjectiles());
-            if (count % 5 == 1) {
-                String moveCommand = command.move(tankID, "FWD", 5, gameInfo.getClientToken());
+            if (count % 10 == 1) {
+                String moveCommand = command.move(tankID, "FWD", 17, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
-            if (count % 10 == 1) {
+            if (count % 25 == 1) {
                 commands.addAll(huntEnemy());
             }
         }
