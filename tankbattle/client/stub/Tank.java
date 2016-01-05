@@ -350,7 +350,7 @@ public class Tank {
         // Move towards the closest enemy.
         ArrayList<String> commands = new ArrayList<>();
 
-        double distance;
+        /*double distance;
         double closest_d = 1000;
         Vector closest = new Vector();
         for (Vector e : enemy_tank_coordinates) {
@@ -363,12 +363,29 @@ public class Tank {
             }
         }
 
-        ArrayList<Vector> path = pathfinder.findPath(this_tank.position, closest);
+        ArrayList<Vector> path = pathfinder.findPath(this_tank.position, closest);*/
+        Vector a = new Vector();
+        Vector b = new Vector();
+        a.x = 0;
+        a.y = 0;
+        b.x = 1280;
+        b.y = 720;
+        double length, small = 10000;
+        ArrayList<Vector> closest_path = pathfinder.findPath(a,b);
+        for (Vector e : enemy_tank_coordinates) {
+            ArrayList<Vector> path = pathfinder.findPath(this_tank.position, e);
+            length = path.size();
+            if (length < small) {
+                small = length;
+                closest_path = path;
+            }
+        }
 
-        if (path.size() > 3) {
-            double x = path.get(path.size() - 2).x;
+
+        if (closest_path.size() > 3) {
+            double x = closest_path.get(closest_path.size() - 2).x;
             if (x == 0) x = 0.000000001;
-            double y = path.get(path.size() - 2).y;
+            double y = closest_path.get(closest_path.size() - 2).y;
             System.out.println("My position: x : " + this_tank.position.x + ", y: " + this_tank.position.y + " Path: x:" + x + ", y:" + y);
 
             double dir = this_tank.direction;
