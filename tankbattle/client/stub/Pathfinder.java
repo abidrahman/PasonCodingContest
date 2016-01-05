@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
-import java.util.Arrays;
 
 public class Pathfinder {
 
@@ -18,8 +17,8 @@ public class Pathfinder {
     private Node end;
     private Node start;
 
-    private PriorityQueue<Node> open = new PriorityQueue<Node>(100, new PathComparator());
-    private ArrayList<Node> closed = new ArrayList<Node>();
+    private PriorityQueue<Node> open = new PriorityQueue<>(100, new PathComparator());
+    private ArrayList<Node> closed = new ArrayList<>();
 
     private Pathfinder() {}
 
@@ -374,15 +373,12 @@ public class Pathfinder {
 
         System.out.println("total loops: " + count);
 
-        ArrayList<Tank.Vector> path = new ArrayList<Tank.Vector>();
+        ArrayList<Tank.Vector> path = new ArrayList<>();
 
         if (open.peek() == null) {
             System.out.println("no valid path!");
             return path;
         }
-
-        // reconstruct path to end
-        count = 0;
 
         Node last = open.peek();
         while (last.parent != null) {

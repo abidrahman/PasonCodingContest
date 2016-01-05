@@ -68,22 +68,7 @@ public class Tank {
         this.gameState = gameState;
         this.updateProjectiles();
         this.update_tanks();
-        JSONArray players = gameState.getJSONArray("players");
-        for (int i = 0; i < players.length(); i++) {
-            if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
-                JSONArray tanks = players.getJSONObject(i).getJSONArray("tanks");
-                for (int j = 0; j < tanks.length(); j++) {
-                    JSONObject tank = tanks.getJSONObject(j);
-                    String tankID = tank.getString("id");
-                    if (tankID.equals(this.tankID)) {
-                        this_tank.position.x = tank.getJSONArray("position").getDouble(0);
-                        this_tank.position.y = tank.getJSONArray("position").getDouble(1);
-                        this_tank.direction = tank.getDouble("tracks");
-                        this_tank.turret = tank.getDouble("turret");
-                    }
-                }
-            }
-        }
+
     }
 
     private void update_tanks() throws JSONException {
@@ -98,6 +83,14 @@ public class Tank {
                 if (players.getJSONObject(i).getString("name").equals(gameInfo.getTeamName())) {
                     JSONArray our_tanks = players.getJSONObject(i).getJSONArray("tanks");
                     for (int j = 0; j < our_tanks.length(); j++) {
+                        JSONObject tank = our_tanks.getJSONObject(j);
+                        String tankID = tank.getString("id");
+                        if (tankID.equals(this.tankID)) {
+                            this_tank.position.x = tank.getJSONArray("position").getDouble(0);
+                            this_tank.position.y = tank.getJSONArray("position").getDouble(1);
+                            this_tank.direction = tank.getDouble("tracks");
+                            this_tank.turret = tank.getDouble("turret");
+                        }
                         Vector coords = new Vector();
                         JSONArray tank_coordinate = our_tanks.getJSONObject(j).getJSONArray("position");
                         coords.x = tank_coordinate.getInt(0);
@@ -162,10 +155,6 @@ public class Tank {
         }
 
         if (found_enemy)  {
-            /*if (state == State.HUNTING) {
-                String stopMove = command.stop(tankID, "MOVE", gameInfo.getClientToken());
-                commands.add(stopMove);
-            }*/
             state = State.DOGFIGHT;
         } else {
             state = State.HUNTING;
@@ -180,10 +169,10 @@ public class Tank {
         if (state == State.HUNTING) {
             count++;
             System.out.println(count);
-            commands.addAll(aim());
             commands.addAll(dodgeProjectiles());
+            commands.addAll(aim());
             if (count % 10 == 1) {
-                String moveCommand = command.move(tankID, "FWD", 17, gameInfo.getClientToken());
+                String moveCommand = command.move(tankID, "FWD", 15, gameInfo.getClientToken());
                 commands.add(moveCommand);
             }
             if (count % 25 == 1) {
@@ -277,7 +266,7 @@ public class Tank {
             double avoid_angle = Math.atan2(My, Mx);
             if (avoid_angle < 0) avoid_angle += 2 * Math.PI;
 
-            if ((avoid_angle < (closest_enemy_angle + 0.15) && avoid_angle > (closest_enemy_angle - 0.15)) && (closest_distance > distance(this_tank.position,m) && !doesCollide(this_tank.position, m))) {
+            if ((avoid_angle < (closest_enemy_angle + 0.2) && avoid_angle > (closest_enemy_angle - 0.2)) && (closest_distance > distance(this_tank.position,m) && !doesCollide(this_tank.position, m))) {
                 return true;
             }
 
@@ -375,10 +364,6 @@ public class Tank {
         }
 
         ArrayList<Vector> path = pathfinder.findPath(this_tank.position, closest);
-
-//        for (Vector coord : path) {
-//            System.out.println("Path: x:" + coord.x + ", y:" + coord.y);
-//        }
 
         if (path.size() > 3) {
             double x = path.get(path.size() - 2).x;
