@@ -154,7 +154,7 @@ public class Tank {
             }
         }
 
-        if (found_enemy)  {
+        if (found_enemy && !friendly_in_the_way(find_closest_enemy()))  {
             state = State.DOGFIGHT;
         } else {
             state = State.HUNTING;
@@ -430,7 +430,7 @@ public class Tank {
         ArrayList<String> commands = new ArrayList<>();
 
         double closest_enemy = find_closest_enemy();
-        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100) && (!friendly_in_the_way(closest_enemy))) {
+        if ((closest_enemy <= 0.02 || closest_enemy >= (2*Math.PI - 0.02)) && (closest_distance <= 100)) {
             String fire_command = command.fire(tankID, gameInfo.getClientToken());
             commands.add(fire_command);
         }
