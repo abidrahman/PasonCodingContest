@@ -167,6 +167,13 @@ public class Tank {
         }
 
         if (state == State.HUNTING) {
+
+
+            state = State.DOGFIGHT;
+            return commands;
+
+
+            /*
             count++;
             System.out.println(count);
             commands.addAll(dodgeProjectiles());
@@ -178,6 +185,7 @@ public class Tank {
             if (count % 25 == 1) {
                 commands.addAll(huntEnemy());
             }
+            */
         }
 
         return commands;
