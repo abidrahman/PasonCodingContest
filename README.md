@@ -1,4 +1,4 @@
-# Java Battle Tanks Sample Client
+# The Winning Code for the UofA Pason Coding Competition 2016
 
 ## Dependencies
 
@@ -30,14 +30,4 @@ java -Djava.library.path=/usr/local/lib -cp /usr/local/share/java/zmq.jar:. tank
 
 java -Djava.library.path=C:\zmq\java\lib -cp .;C:\zmq\java\lib\zmq.jar tankbattle.client.stub.Client <ip-address> <team-name> <password> <match-token>
 
-## Example output when stub is ran
 
-Starting Battle Tank Client...
-Creating zeromq connections...
-Connecting to server...
-Received client token... 48de8b34-c393-4b14-817a-6e07896525cb
-Connected!
-Waiting for initial game state...
-Received game state!
-Missing algorithm.
-Exiting...
