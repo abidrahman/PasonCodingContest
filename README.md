@@ -1,5 +1,12 @@
 # The Winning Code for the UofA Pason Coding Competition 2016
 
+## Strategy
+
+Team Ascension strategy:
+- fire at closest target that is within range, not obstructed by a wall, and not in the path of a friendly tank
+- dodge incoming projectiles by spinning and moving away
+- A* pathfinding with jump point search optimization
+
 ## Dependencies
 
 ### 1. ZeroMQ
