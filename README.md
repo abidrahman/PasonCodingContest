@@ -1,5 +1,7 @@
 # The Winning Code for the UofA Pason Coding Competition 2016
 
+# [Pason's Bring on the Battle Coding Contest FINAL](https://www.youtube.com/watch?v=M5BECZFdaY8)
+
 ## Strategy
 
 Team Ascension strategy:
